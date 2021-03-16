@@ -39,21 +39,28 @@ logic [15:0] hyper_dq_i;
 logic [15:0] hyper_dq_o;
 logic [1:0]  hyper_dq_oe;
 logic        hyper_reset_no;
-logic        evt_eot_hyper_o;
+
+logic [1:0][31:0] cfg_data_s;
+logic [1:0]       cfg_ready_s;
+logic             evt_eot_hyper_s;
 
 import udma_pkg::TRANS_SIZE;     
 import udma_pkg::L2_AWIDTH_NOAL; 
 
+
+assign cfg_data_o = cfg_data_s[0];
+assign cfg_ready_o = cfg_ready_s;
+
 assign events_o[0] = rx_ch[0].events;
 assign events_o[1] = tx_ch[0].events;
-assign events_o[2] = evt_eot_hyper_o;
+assign events_o[2] = evt_eot_hyper_s;
 assign events_o[3] = 1'b0;
 
 udma_hyper_top #(
 	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
 	.TRANS_SIZE     (TRANS_SIZE),
 	.DELAY_BIT_WIDTH(5),
-	.NB_CH          (0)
+	.NB_CH          (1)
 ) i_udma_hyper_top (
 	.sys_clk_i          ( sys_clk_i          ),
 	.periph_clk_i       ( periph_clk_i       ),
@@ -61,10 +68,10 @@ udma_hyper_top #(
 
 	.cfg_data_i         ( cfg_data_i         ),
 	.cfg_addr_i         ( cfg_addr_i         ),
-	.cfg_valid_i        ( cfg_valid_i        ), 
+	.cfg_valid_i        ( {1'b0,cfg_valid_i} ), 
 	.cfg_rwn_i          ( cfg_rwn_i          ),
-	.cfg_ready_o        ( cfg_ready_o        ), 
-	.cfg_data_o         ( cfg_data_o         ), 
+	.cfg_ready_o        ( cfg_ready_s        ), 
+	.cfg_data_o         ( cfg_data_s         ), 
 	
 	.cfg_rx_startaddr_o ( rx_ch[0].startaddr  ),
 	.cfg_rx_size_o      ( rx_ch[0].size       ),
@@ -96,7 +103,7 @@ udma_hyper_top #(
 	.data_tx_valid_i    ( tx_ch[0].valid      ),
 	.data_tx_ready_o    ( tx_ch[0].ready      ),
 
-	.evt_eot_hyper_o    (evt_eot_hyper_o      ),
+	.evt_eot_hyper_o    (evt_eot_hyper_s      ),
 
 	.hyper_cs_no        (hyper_cs_no                     ),
 	.hyper_ck_o         (hyper_to_pad.hyper_ck_o         ),
