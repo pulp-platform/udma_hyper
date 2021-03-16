@@ -39,61 +39,64 @@ logic [15:0] hyper_dq_i;
 logic [15:0] hyper_dq_o;
 logic [1:0]  hyper_dq_oe;
 logic        hyper_reset_no;
+logic        evt_eot_hyper_o;
 
 import udma_pkg::TRANS_SIZE;     
 import udma_pkg::L2_AWIDTH_NOAL; 
 
-assign events_o[0] = events_i[0];
-assign events_o[1] = events_i[1];
+assign events_o[0] = rx_ch[0].events;
+assign events_o[1] = tx_ch[0].events;
+assign events_o[2] = evt_eot_hyper_o;
+assign events_o[3] = 1'b0;
 
 udma_hyper_top #(
 	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
 	.TRANS_SIZE     (TRANS_SIZE),
-	.DELAY_BIT_WIDTH(3),
+	.DELAY_BIT_WIDTH(5),
 	.NB_CH          (0)
 ) i_udma_hyper_top (
-	.sys_clk_i          (sys_clk_i           ),
-	.periph_clk_i       (periph_clk_i        ),
-	.rstn_i             (rstn_i              ),
+	.sys_clk_i          ( sys_clk_i          ),
+	.periph_clk_i       ( periph_clk_i       ),
+	.rstn_i             ( rstn_i             ),
 
 	.cfg_data_i         ( cfg_data_i         ),
 	.cfg_addr_i         ( cfg_addr_i         ),
-	.cfg_valid_i        ( cfg_valid_i        ), // TODO: Check connection ! Signal/port not matching : Expecting logic [8:0]  -- Found logic 
+	.cfg_valid_i        ( cfg_valid_i        ), 
 	.cfg_rwn_i          ( cfg_rwn_i          ),
-	.cfg_ready_o        ( cfg_ready_o        ), // TODO: Check connection ! Signal/port not matching : Expecting logic [8:0]  -- Found logic 
-	.cfg_data_o         ( cfg_data_o         ), // TODO: Check connection ! Signal/port not matching : Expecting logic [8:0][31:0]  -- Found logic [31:0] 
+	.cfg_ready_o        ( cfg_ready_o        ), 
+	.cfg_data_o         ( cfg_data_o         ), 
 	
-	.cfg_rx_startaddr_o (rx_ch[0].startaddr  ),
-	.cfg_rx_size_o      (rx_ch[0].size       ),
-	.cfg_rx_continuous_o(rx_ch[0].continuous ),
-	.cfg_rx_en_o        (rx_ch[0].cen        ),
-	.cfg_rx_clr_o       (rx_ch[0].clr        ),
-	.cfg_rx_en_i        (rx_ch[0].en         ),
-	.cfg_rx_pending_i   (rx_ch[0].pending    ),
-	.cfg_rx_curr_addr_i (rx_ch[0].curr_addr  ),
-	.cfg_rx_bytes_left_i(rx_ch[0].bytes_left ),
-	.data_rx_datasize_o (rx_ch[0].datasize   ),
-	.data_rx_o          (rx_ch[0].data       ),
-	.data_rx_valid_o    (rx_ch[0].valid      ),
-	.data_rx_ready_i    (rx_ch[0].ready      ),
+	.cfg_rx_startaddr_o ( rx_ch[0].startaddr  ),
+	.cfg_rx_size_o      ( rx_ch[0].size       ),
+	.cfg_rx_continuous_o( rx_ch[0].continuous ),
+	.cfg_rx_en_o        ( rx_ch[0].cen        ),
+	.cfg_rx_clr_o       ( rx_ch[0].clr        ),
+	.cfg_rx_en_i        ( rx_ch[0].en         ),
+	.cfg_rx_pending_i   ( rx_ch[0].pending    ),
+	.cfg_rx_curr_addr_i ( rx_ch[0].curr_addr  ),
+	.cfg_rx_bytes_left_i( rx_ch[0].bytes_left ),
+	.data_rx_datasize_o ( rx_ch[0].datasize   ),
+	.data_rx_o          ( rx_ch[0].data       ),
+	.data_rx_valid_o    ( rx_ch[0].valid      ),
+	.data_rx_ready_i    ( rx_ch[0].ready      ),
 
-	.cfg_tx_startaddr_o (tx_ch[0].startaddr  ),
-	.cfg_tx_size_o      (tx_ch[0].size       ),
-	.cfg_tx_continuous_o(tx_ch[0].continuous ),
-	.cfg_tx_en_o        (tx_ch[0].cen        ),
-	.cfg_tx_clr_o       (tx_ch[0].clr        ),
-	.cfg_tx_en_i        (tx_ch[0].en         ),
-	.cfg_tx_pending_i   (tx_ch[0].pending    ),
-	.cfg_tx_curr_addr_i (tx_ch[0].curr_addr  ),
-	.cfg_tx_bytes_left_i(tx_ch[0].bytes_left ),
-	.data_tx_req_o      (tx_ch[0].req        ),
-	.data_tx_gnt_i      (tx_ch[0].gnt        ),
-	.data_tx_datasize_o (tx_ch[0].datasize   ),
-	.data_tx_i          (tx_ch[0].data       ),
-	.data_tx_valid_i    (tx_ch[0].valid      ),
-	.data_tx_ready_o    (tx_ch[0].ready      ),
+	.cfg_tx_startaddr_o ( tx_ch[0].startaddr  ),
+	.cfg_tx_size_o      ( tx_ch[0].size       ),
+	.cfg_tx_continuous_o( tx_ch[0].continuous ),
+	.cfg_tx_en_o        ( tx_ch[0].cen        ),
+	.cfg_tx_clr_o       ( tx_ch[0].clr        ),
+	.cfg_tx_en_i        ( tx_ch[0].en         ),
+	.cfg_tx_pending_i   ( tx_ch[0].pending    ),
+	.cfg_tx_curr_addr_i ( tx_ch[0].curr_addr  ),
+	.cfg_tx_bytes_left_i( tx_ch[0].bytes_left ),
+	.data_tx_req_o      ( tx_ch[0].req        ),
+	.data_tx_gnt_i      ( tx_ch[0].gnt        ),
+	.data_tx_datasize_o ( tx_ch[0].datasize   ),
+	.data_tx_i          ( tx_ch[0].data       ),
+	.data_tx_valid_i    ( tx_ch[0].valid      ),
+	.data_tx_ready_o    ( tx_ch[0].ready      ),
 
-	.evt_eot_hyper_o    (evt_eot_hyper_o     ),
+	.evt_eot_hyper_o    (evt_eot_hyper_o      ),
 
 	.hyper_cs_no        (hyper_cs_no                     ),
 	.hyper_ck_o         (hyper_to_pad.hyper_ck_o         ),
@@ -109,6 +112,11 @@ udma_hyper_top #(
 
 	.hyper_reset_no     (hyper_to_pad.hyper_reset_no     )
 );
+
+assign rx_ch[0].stream = '0;
+assign rx_ch[0].stream_id = '0;
+assign rx_ch[0].destination = '0;
+assign tx_ch[0].destination = '0;
 
 assign hyper_to_pad.hyper_rwds_o  = hyper_rwds_o[0];
 assign hyper_to_pad.hyper_rwds_oe = hyper_rwds_oe[0];
