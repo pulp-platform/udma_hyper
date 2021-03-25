@@ -748,7 +748,7 @@ module udma_hyperbus_mulid
     .clk90                           ( clk90                        ),
     .rst_ni                          ( phy_rst_ni                   ),
     .test_en_ti                      ( 1'b0                         ),
-    .clk_test                        (),
+    .clk_test                        ( 1'b0                         ),
 
     .config_t_latency_access         ( { 27'b0, ctrl_t_latency_access }         ),
     .config_en_latency_additional    ( { 31'b0, ctrl_en_latency_additional }    ),
