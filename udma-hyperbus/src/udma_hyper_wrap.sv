@@ -14,8 +14,6 @@ module udma_hyper_wrap
 	output logic         cfg_ready_o,
     output logic  [31:0] cfg_data_o,
 
-    input  udma_evt_t    ch_events_i,
-
     output udma_evt_t    events_o,
     input  udma_evt_t    events_i,
 
@@ -51,10 +49,9 @@ import udma_pkg::L2_AWIDTH_NOAL;
 assign cfg_data_o = cfg_data_s[0];
 assign cfg_ready_o = cfg_ready_s;
 
-assign events_o[0] = rx_ch[0].events;
-assign events_o[1] = tx_ch[0].events;
-assign events_o[2] = evt_eot_hyper_s;
-assign events_o[3] = 1'b0;
+logic is_hyper_read_q;
+logic is_hyper_read_d;
+
 
 udma_hyper_top #(
 	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
@@ -149,5 +146,37 @@ assign hyper_dq_i[4] = pad_to_hyper.hyper_dq4_i;
 assign hyper_dq_i[5] = pad_to_hyper.hyper_dq5_i;
 assign hyper_dq_i[6] = pad_to_hyper.hyper_dq6_i;
 assign hyper_dq_i[7] = pad_to_hyper.hyper_dq7_i;
+
+assign events_o[0] = rx_ch[0].events;
+assign events_o[1] = tx_ch[0].events;
+assign events_o[2] = |evt_eot_hyper_s & is_hyper_read_d ;
+assign events_o[3] = |evt_eot_hyper_s & !is_hyper_read_d;
+
+//assign s_events[4*PER_ID_HYPER]            = rx_ch[0].events;
+//assign s_events[4*PER_ID_HYPER+1]          = tx_ch[0].events;
+//assign s_events[4*PER_ID_HYPER+2]          = |evt_eot_hyper_s & is_hyper_read_d ;
+//assign s_events[4*PER_ID_HYPER+3]          = |evt_eot_hyper_s & !is_hyper_read_d;
+
+always @(posedge sys_clk_i, negedge rstn_i) begin
+   if(~rstn_i) 
+         is_hyper_read_q = 0;
+   else
+         is_hyper_read_q = is_hyper_read_d;
+end 
+
+always_comb begin
+       if(is_hyper_read_q) begin
+            if ( tx_ch[0].events & !rx_ch[0].events) begin
+                  is_hyper_read_d =0;
+            end
+            else  is_hyper_read_d =1;
+       end 
+       else if(!is_hyper_read_q) begin
+            if ( rx_ch[0].events & !tx_ch[0].events) begin
+                  is_hyper_read_d =1;
+            end
+            else  is_hyper_read_d =0;
+       end
+end
 
 endmodule
