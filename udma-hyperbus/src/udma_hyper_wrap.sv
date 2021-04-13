@@ -9,10 +9,10 @@ module udma_hyper_wrap
 
 	input  logic  [31:0] cfg_data_i,
 	input  logic   [4:0] cfg_addr_i,
-	input  logic         cfg_valid_i,
+	input  logic  [1:0]  cfg_valid_i,
 	input  logic         cfg_rwn_i,
-	output logic         cfg_ready_o,
-    output logic  [31:0] cfg_data_o,
+	output logic  [1:0]  cfg_ready_o,
+    output logic  [1:0][31:0] cfg_data_o,
 
     output udma_evt_t    events_o,
     input  udma_evt_t    events_i,
@@ -46,8 +46,6 @@ import udma_pkg::TRANS_SIZE;
 import udma_pkg::L2_AWIDTH_NOAL; 
 
 
-assign cfg_data_o = cfg_data_s[0];
-assign cfg_ready_o = cfg_ready_s;
 
 logic is_hyper_read_q;
 logic is_hyper_read_d;
@@ -65,11 +63,11 @@ udma_hyper_top #(
 
 	.cfg_data_i         ( cfg_data_i         ),
 	.cfg_addr_i         ( cfg_addr_i         ),
-	.cfg_valid_i        ( {1'b0,cfg_valid_i} ), 
+	.cfg_valid_i        ( cfg_valid_i        ),
 	.cfg_rwn_i          ( cfg_rwn_i          ),
-	.cfg_ready_o        ( cfg_ready_s        ), 
-	.cfg_data_o         ( cfg_data_s         ), 
-	
+	.cfg_ready_o        ( cfg_ready_o        ),
+	.cfg_data_o         ( cfg_data_o         ),
+
 	.cfg_rx_startaddr_o ( rx_ch[0].startaddr  ),
 	.cfg_rx_size_o      ( rx_ch[0].size       ),
 	.cfg_rx_continuous_o( rx_ch[0].continuous ),
