@@ -15,7 +15,6 @@ sources:
       - udma-hyperbus/src/clk_gen_hyper.sv
       - udma-hyperbus/src/onehot_to_bin_hyper.sv
       - udma-hyperbus/src/ddr_out.sv
-      - udma-hyperbus/src/hyperbus_delay_line.sv
       - udma-hyperbus/src/read_clk_rwds.sv
       - udma-hyperbus/src/hyperbus_phy.sv
       - udma-hyperbus/src/cmd_addr_gen.sv
@@ -46,3 +45,11 @@ sources:
       - udma-hyperbus/src/udma_hyper_busy_phy.sv
       - udma-hyperbus/src/udma_hyper_top.sv
       - udma-hyperbus/src/udma_hyper_wrap.sv
+
+  - target: not(synthesis)
+    files:
+      - udma-hyperbus/src/hyperbus_delay_line.sv
+# magical "tech" version of the delay line for gf22...
+  - target: synthesis
+    files:
+      - udma-hyperbus/src/tech/hyperbus_delay_line_tech.sv
