@@ -12,24 +12,6 @@
 //// Hayate Okuhara <hayate.okuhara@unibo.it>
 
 
-// Configuration register for Hyper bus CHANNEl
-`define REG_RX_SADDR            5'b00000 //BASEADDR+0x00 L2 address for RX
-`define REG_RX_SIZE             5'b00001 //BASEADDR+0x04 size of the software buffer in L2
-`define REG_UDMA_RXCFG          5'b00010 //BASEADDR+0x08 UDMA configuration setup (RX)
-`define REG_TX_SADDR            5'b00011 //BASEADDR+0x0C address of the data being transferred 
-`define REG_TX_SIZE             5'b00100 //BASEADDR+0x10 size of the data being transferred
-`define REG_UDMA_TXCFG          5'b00101 //BASEADDR+0x14 UDMA configuration setup (TX)
-`define HYPER_CA_SETUP          5'b00110 //BASEADDR+0x18 set read/write, address space, and burst type 
-`define REG_HYPER_ADDR          5'b00111 //BASEADDR+0x1C set address in a hyper ram.
-`define REG_HYPER_CFG           5'b01000 //BASEADDR+0x20 set the configuration data for HyperRAM
-`define STATUS                  5'b01001 //BASEADDR+0x24 status register
-`define TWD_ACT_EXT             5'b01010 //BASEADDR+0x28 set 2D transfer activation
-`define TWD_COUNT_EXT           5'b01011 //BASEADDR+0x2C set 2D transfer count
-`define TWD_STRIDE_EXT          5'b01100 //BASEADDR+0x30 set 2D transfer stride
-`define TWD_ACT_L2              5'b01101 //BASEADDR+0x28 set 2D transfer activation
-`define TWD_COUNT_L2            5'b01110 //BASEADDR+0x2C set 2D transfer count
-`define TWD_STRIDE_L2           5'b01111 //BASEADDR+0x30 set 2D transfer stride
-
 
 module udma_hyper_reg_if_mulid #(
                           parameter L2_AWIDTH_NOAL = 12,
