@@ -178,10 +178,10 @@ module udma_hyper_reg_if_mulid #(
           end
         else
           begin
-             r_rx_en          <=  'h0;
-             r_rx_clr         <=  'h0;
-             r_tx_en          <=  'h0;
-             r_tx_clr         <=  'h0;
+             r_rx_en          =  'h0;
+             r_rx_clr         =  'h0;
+             r_tx_en          =  'h0;
+             r_tx_clr         =  'h0;
              //r_addr_space     =  1'b0;
 
              if (cfg_valid_i & ~cfg_reg_rwn_i)
@@ -193,8 +193,8 @@ module udma_hyper_reg_if_mulid #(
                       r_rx_size        <= cfg_data_i[TRANS_SIZE-1:0];
                     `REG_UDMA_RXCFG:
                       begin
-                         r_rx_clr          <= cfg_data_i[5];
-                         r_rx_en           <= cfg_data_i[4];
+                         r_rx_clr          = cfg_data_i[5];
+                         r_rx_en           = cfg_data_i[4];
                          r_rx_continuous  <= cfg_data_i[0];
                       end
                     `REG_TX_SADDR:
@@ -203,8 +203,8 @@ module udma_hyper_reg_if_mulid #(
                       r_tx_size        <= cfg_data_i[TRANS_SIZE-1:0];
                     `REG_UDMA_TXCFG:
                       begin
-                         r_tx_clr          <= cfg_data_i[5];
-                         r_tx_en           <= cfg_data_i[4];
+                         r_tx_clr          = cfg_data_i[5];
+                         r_tx_en           = cfg_data_i[4];
                          r_tx_continuous  <= cfg_data_i[0];
                       end      
                     `HYPER_CA_SETUP:
