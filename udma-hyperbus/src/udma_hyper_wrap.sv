@@ -157,9 +157,9 @@ assign events_o[3] = |evt_eot_hyper_s & !is_hyper_read_d;
 
 always @(posedge sys_clk_i, negedge rstn_i) begin
    if(~rstn_i) 
-         is_hyper_read_q = 0;
+         is_hyper_read_q <= 0;
    else
-         is_hyper_read_q = is_hyper_read_d;
+         is_hyper_read_q <= is_hyper_read_d;
 end 
 
 always_comb begin
