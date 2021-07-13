@@ -13,7 +13,7 @@
 
 `timescale 1ps/1ps
 
-module hyperbus_phy #(
+module udma_hyperbus_phy #(
     parameter BURST_WIDTH = 12,
     parameter NR_CS = 2,
     parameter DELAY_BIT_WIDTH =3,

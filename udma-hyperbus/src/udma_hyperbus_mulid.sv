@@ -739,7 +739,7 @@ module udma_hyperbus_mulid
       );
 
 ////////////////////Hyper Bus PHY /////////////////////////
-  hyperbus_phy #(
+  udma_hyperbus_phy #(
     .NR_CS(NR_CS),
     .DELAY_BIT_WIDTH(DELAY_BIT_WIDTH),
     .BURST_WIDTH(TRANS_SIZE)
