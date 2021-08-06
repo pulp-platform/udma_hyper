@@ -50,6 +50,6 @@ sources:
     files:
       - udma-hyperbus/src/hyperbus_delay_line.sv
 # magical "tech" version of the delay line for gf22...
-  - target: synthesis
+  - target: all(any(gf22_8t_lvt, hyperbus_delay_line_gf22_8t_include), not(hyperbus_delay_line_gf22_8t_exclude))
     files:
       - udma-hyperbus/src/tech/hyperbus_delay_line_tech.sv
