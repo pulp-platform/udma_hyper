@@ -3,6 +3,9 @@ package:
   authors:
   - "Hayate Okuhara <hayate.okuhara@unibo.it>"
 
+dependencies:
+  udma_core:    {git: "https://github.com/pulp-platform/udma_core.git", version: 2.0.0 }
+
 sources:
   # pulp_soc
   - include_dirs:
@@ -45,6 +48,8 @@ sources:
       - udma-hyperbus/src/udma_hyper_busy_phy.sv
       - udma-hyperbus/src/udma_hyper_top.sv
       - udma-hyperbus/src/udma_hyper_wrap.sv
+      - udma-hyperbus/src/hyper_macro.sv
+      - udma-hyperbus/src/hyper_macro_bridge.sv
 
   - target: not(synthesis)
     files:
