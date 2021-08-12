@@ -25,10 +25,10 @@ module udma_hyper_top #(
 
      input  logic [31:0]               cfg_data_i,
      input  logic [4:0]                cfg_addr_i,
-     input  logic [NB_CH:0]            cfg_valid_i,
+     input  logic                      cfg_valid_i,
      input  logic                      cfg_rwn_i,
-     output logic [NB_CH:0]            cfg_ready_o,
-     output logic [NB_CH:0][31:0]      cfg_data_o,
+     output logic                      cfg_ready_o,
+     output logic          [31:0]      cfg_data_o,
 
      output logic [L2_AWIDTH_NOAL-1:0] cfg_rx_startaddr_o,
      output logic     [TRANS_SIZE-1:0] cfg_rx_size_o,
@@ -103,11 +103,34 @@ module udma_hyper_top #(
         .ready_o ( data_tx_ready_o )
     );
 
+    logic [NB_CH:0] cfg_valid_s;
+    logic [NB_CH:0] cfg_ready_s;
+    logic [NB_CH:0][31:0] cfg_rdata_s;
+    logic cfg_demux_s;
+
+    // hold the demux signal
+    always_ff @(posedge sys_clk_i or negedge rstn_i) begin : proc_cfg_demux
+        if(~rstn_i) begin
+            cfg_demux_s <= 0;
+        end else if (cfg_valid_i) begin
+            cfg_demux_s <= cfg_addr_i[4];
+        end
+    end
+
+    always_comb begin : proc_demux_cfg
+        // chose the valid according to the address
+        cfg_valid_s[0] = cfg_demux_s && cfg_valid_i;
+        cfg_valid_s[1] = ~cfg_demux_s && cfg_valid_i;
+        // pick the right response according to the address
+        cfg_ready_o = cfg_demux_s ? cfg_ready_s[0] : cfg_ready_s[1];
+        cfg_data_o = ~cfg_demux_s ? cfg_rdata_s[0] : cfg_rdata_s[1];
+    end
+
     udma_hyperbus_mulid #(
-     .L2_AWIDTH_NOAL ( L2_AWIDTH_NOAL ),
-     .TRANS_SIZE     ( TRANS_SIZE     ),
-     .DELAY_BIT_WIDTH ( DELAY_BIT_WIDTH ),
-     .NB_CH          ( NB_CH          )
+        .L2_AWIDTH_NOAL ( L2_AWIDTH_NOAL ),
+        .TRANS_SIZE     ( TRANS_SIZE     ),
+        .DELAY_BIT_WIDTH ( DELAY_BIT_WIDTH ),
+        .NB_CH          ( NB_CH          )
     ) udma_hyperbus_i
     (
         .sys_clk_i               ( sys_clk_i                    ),
@@ -117,10 +140,10 @@ module udma_hyper_top #(
 
         .cfg_data_i              ( cfg_data_i                   ),
         .cfg_addr_i              ( cfg_addr_i                   ),
-        .cfg_valid_i             ( cfg_valid_i                  ),
+        .cfg_valid_i             ( cfg_valid_s                  ),
         .cfg_rwn_i               ( cfg_rwn_i                    ),
-        .cfg_ready_o             ( cfg_ready_o                  ),
-        .cfg_data_o              ( cfg_data_o                   ),
+        .cfg_ready_o             ( cfg_ready_s                  ),
+        .cfg_data_o              ( cfg_rdata_s                  ),
 
         .tx_data_udma_i          ( s_data_tx                    ),
         .tx_valid_udma_i         ( s_data_tx_valid              ),

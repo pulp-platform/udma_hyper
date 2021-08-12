@@ -142,6 +142,8 @@ module hyper_macro
     assign hyper_macro_evt_o[2] = |evt_eot_hyper_s & is_hyper_read_d ;
     assign hyper_macro_evt_o[3] = |evt_eot_hyper_s & !is_hyper_read_d;
 
+    assign hyper_dq_i[15:8] = 8'b00000000;
+
     always @(posedge sys_clk_i, negedge rstn_i) begin
        if(~rstn_i) 
              is_hyper_read_q = 0;
