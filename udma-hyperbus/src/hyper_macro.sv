@@ -1,3 +1,20 @@
+/* 
+ * Alfio Di Mauro <adimauro@iis.ee.ethz.ch>
+ *
+ * Copyright (C) 2018-2020 ETH Zurich, University of Bologna
+ * Copyright and related rights are licensed under the Solderpad Hardware
+ * License, Version 0.51 (the "License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ *
+ *                http://solderpad.org/licenses/SHL-0.51. 
+ *
+ * Unless required by applicable law
+ * or agreed to in writing, software, hardware and materials distributed under
+ * this License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
+
 module hyper_macro 
 	import udma_pkg::*;
 (
@@ -19,10 +36,12 @@ module hyper_macro
 	input udma_evt_t hyper_macro_evt_i,
 
 	// pad signals
-	inout wire logic pad_hyper_csn,
 	inout wire logic pad_hyper_reset_n,
 	inout wire logic pad_hyper_ck,
 	inout wire logic pad_hyper_ckn,
+	inout wire logic pad_hyper_csn0,
+    inout wire logic pad_hyper_csn1,
+	inout wire logic pad_hyper_rwds,
 	inout wire logic pad_hyper_dq0,
 	inout wire logic pad_hyper_dq1,
 	inout wire logic pad_hyper_dq2,
@@ -30,8 +49,7 @@ module hyper_macro
 	inout wire logic pad_hyper_dq4,
 	inout wire logic pad_hyper_dq5,
 	inout wire logic pad_hyper_dq6,
-	inout wire logic pad_hyper_dq7,
-	inout wire logic pad_hyper_rwds
+	inout wire logic pad_hyper_dq7
 
 );
 
@@ -44,18 +62,21 @@ module hyper_macro
     logic [15:0] hyper_dq_i;
     logic [15:0] hyper_dq_o;
     logic [1:0] hyper_dq_oe_o;
+    logic hyper_reset_no;
 
     logic evt_eot_hyper_s;
 
-    PDDWUWSWCDG_H      padinst_hyper_csno0  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[0]     ), .C(                  ), .PAD( pad_hyper_csn  ), 
+    PDDWUWSWCDG_H      padinst_hyper_csno0  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[0]     ), .C(                  ), .PAD( pad_hyper_csn0  ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
+    PDDWUWSWCDG_H      padinst_hyper_csno1  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[1]     ), .C(                  ), .PAD( pad_hyper_csn1  ), 
+                                                .PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
     PDDWUWSWCDG_H      padinst_hyper_ck     (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_ck_o         ), .C(               ), .PAD( pad_hyper_ck    ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) ); 
     PDDWUWSWCDG_H      padinst_hyper_ckno   (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_ck_no        ), .C(               ), .PAD( pad_hyper_ckn   ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
     PDDWUWSWCDG_H      padinst_hyper_rwds0  (.RTE(1'b0), .IE(1'b1), .OEN( ~hyper_rwds_oe_o[0]  ), .I( hyper_rwds_o[0]    ), .C( hyper_rwds_i        ), .PAD( pad_hyper_rwds ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
-    PDDWUWSWCDG_H      padinst_hyper_resetn (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_reset_no     ), .C(               ), .PAD( pad_hyper_reset ), 
+    PDDWUWSWCDG_H      padinst_hyper_resetn (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_reset_no     ), .C(               ), .PAD( pad_hyper_reset_n ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
     PDDWUWSWCDG_H      padinst_hyper_dqio0  (.RTE(1'b0), .IE(1'b1), .OEN( ~hyper_dq_oe_o[0]    ), .I( hyper_dq_o[0]      ), .C( hyper_dq_i[0] ), .PAD( pad_hyper_dq0   ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );   
@@ -76,7 +97,7 @@ module hyper_macro
 
     udma_hyper_top #(
     	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
-    	.TRANS_SIZE     (TRANS_SIZE),
+    	.TRANS_SIZE     (16),
     	.DELAY_BIT_WIDTH(5),
     	.NB_CH          (1)
     ) i_udma_hyper_top (
@@ -84,7 +105,7 @@ module hyper_macro
     	.periph_clk_i       ( periph_clk_i                    ),
     	.rstn_i             ( rstn_i                          ),
     	.cfg_data_i         ( hyper_cfg_req_i.data            ),
-    	.cfg_addr_i         ( hyper_cfg_req_i.addr            ),
+    	.cfg_addr_i         ( hyper_cfg_req_i.addr[5:0]       ),
     	.cfg_valid_i        ( hyper_cfg_req_i.valid           ),
     	.cfg_rwn_i          ( hyper_cfg_req_i.rwn             ),
     	.cfg_ready_o        ( hyper_cfg_rsp_o.ready           ),

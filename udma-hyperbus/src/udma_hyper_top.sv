@@ -24,7 +24,7 @@ module udma_hyper_top #(
      input  logic                      rstn_i,
 
      input  logic [31:0]               cfg_data_i,
-     input  logic [4:0]                cfg_addr_i,
+     input  logic [5:0]                cfg_addr_i,
      input  logic                      cfg_valid_i,
      input  logic                      cfg_rwn_i,
      output logic                      cfg_ready_o,
@@ -88,19 +88,21 @@ module udma_hyper_top #(
 
      io_tx_fifo #(
       .DATA_WIDTH(32),
-      .BUFFER_DEPTH(4)
+      .BUFFER_DEPTH(16)
       ) u_fifo (
         .clk_i   ( sys_clk_i       ),
         .rstn_i  ( rstn_i          ),
         .clr_i   ( 1'b0            ),
-        .data_o  ( s_data_tx       ),
-        .valid_o ( s_data_tx_valid ),
-        .ready_i ( s_data_tx_ready ),
+
         .req_o   ( data_tx_req_o   ),
         .gnt_i   ( data_tx_gnt_i   ),
         .valid_i ( data_tx_valid_i ),
         .data_i  ( data_tx_i       ),
-        .ready_o ( data_tx_ready_o )
+        .ready_o ( data_tx_ready_o ),
+
+        .data_o  ( s_data_tx       ),
+        .valid_o ( s_data_tx_valid ),
+        .ready_i ( s_data_tx_ready )
     );
 
     logic [NB_CH:0] cfg_valid_s;
@@ -109,21 +111,21 @@ module udma_hyper_top #(
     logic cfg_demux_s;
 
     // hold the demux signal
-    always_ff @(posedge sys_clk_i or negedge rstn_i) begin : proc_cfg_demux
+    always_ff @(posedge periph_clk_i or negedge rstn_i) begin : proc_cfg_demux
         if(~rstn_i) begin
             cfg_demux_s <= 0;
         end else if (cfg_valid_i) begin
-            cfg_demux_s <= cfg_addr_i[4];
+            cfg_demux_s <= cfg_addr_i[5];
         end
     end
 
     always_comb begin : proc_demux_cfg
         // chose the valid according to the address
-        cfg_valid_s[0] = cfg_demux_s && cfg_valid_i;
-        cfg_valid_s[1] = ~cfg_demux_s && cfg_valid_i;
+        cfg_valid_s[0] = ~cfg_addr_i[5] && cfg_valid_i;
+        cfg_valid_s[1] = cfg_addr_i[5] && cfg_valid_i;
         // pick the right response according to the address
-        cfg_ready_o = cfg_demux_s ? cfg_ready_s[0] : cfg_ready_s[1];
-        cfg_data_o = ~cfg_demux_s ? cfg_rdata_s[0] : cfg_rdata_s[1];
+        cfg_ready_o = ~cfg_demux_s ? cfg_ready_s[0] : cfg_ready_s[1];
+        cfg_data_o = cfg_demux_s ? cfg_rdata_s[0] : cfg_rdata_s[1];
     end
 
     udma_hyperbus_mulid #(

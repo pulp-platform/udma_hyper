@@ -58,6 +58,7 @@ always_comb begin : proc_tx_req
 	hyper_linch_tx_req_o.en = tx_ch[0].en;
 	hyper_linch_tx_req_o.events = tx_ch[0].events;
 	hyper_linch_tx_req_o.pending = tx_ch[0].pending;
+	hyper_linch_tx_req_o.gnt = tx_ch[0].gnt;
 	hyper_linch_tx_req_o.stream = '0;
 	hyper_linch_tx_req_o.stream_id = '0;
 	hyper_linch_tx_req_o.valid = tx_ch[0].valid;
