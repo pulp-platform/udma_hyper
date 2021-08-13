@@ -50,11 +50,12 @@ sources:
       - udma-hyperbus/src/udma_hyper_wrap.sv
       - udma-hyperbus/src/hyper_macro.sv
       - udma-hyperbus/src/hyper_macro_bridge.sv
-
-  - target: not(synthesis)
-    files:
       - udma-hyperbus/src/hyperbus_delay_line.sv
-# magical "tech" version of the delay line for gf22...
-  - target: all(any(gf22_8t_lvt, hyperbus_delay_line_gf22_8t_include), not(hyperbus_delay_line_gf22_8t_exclude))
-    files:
-      - udma-hyperbus/src/tech/hyperbus_delay_line_tech.sv
+
+  #- target: not(synthesis)
+  #  files:
+  #    - udma-hyperbus/src/hyperbus_delay_line.sv
+  ## magical "tech" version of the delay line for gf22...
+  #- target: all(any(tsmc16, hyperbus_delay_line_tsmc16_include), not(hyperbus_delay_line_tsmc16_exclude))
+  #  files:
+  #    - udma-hyperbus/src/tech/hyperbus_delay_line_tech.sv

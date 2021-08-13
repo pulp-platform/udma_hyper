@@ -141,7 +141,7 @@ module udma_hyper_top #(
         .phy_rst_ni              ( rstn_i                       ),
 
         .cfg_data_i              ( cfg_data_i                   ),
-        .cfg_addr_i              ( cfg_addr_i                   ),
+        .cfg_addr_i              ( cfg_addr_i[4:0]              ),
         .cfg_valid_i             ( cfg_valid_s                  ),
         .cfg_rwn_i               ( cfg_rwn_i                    ),
         .cfg_ready_o             ( cfg_ready_s                  ),
