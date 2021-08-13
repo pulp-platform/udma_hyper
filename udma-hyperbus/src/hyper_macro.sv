@@ -40,7 +40,7 @@ module hyper_macro
 	inout wire logic pad_hyper_ck,
 	inout wire logic pad_hyper_ckn,
 	inout wire logic pad_hyper_csn0,
-    inout wire logic pad_hyper_csn1,
+    // inout wire logic pad_hyper_csn1,
 	inout wire logic pad_hyper_rwds,
 	inout wire logic pad_hyper_dq0,
 	inout wire logic pad_hyper_dq1,
@@ -66,10 +66,11 @@ module hyper_macro
 
     logic evt_eot_hyper_s;
 
-    PDDWUWSWCDG_H      padinst_hyper_csno0  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[0]     ), .C(                  ), .PAD( pad_hyper_csn0  ), 
+    // TODO check why CS 1 is used instead of the 0, connecting the tested one for the moment
+    PDDWUWSWCDG_H      padinst_hyper_csno  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[1]     ), .C(                  ), .PAD( pad_hyper_csn0  ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
-    PDDWUWSWCDG_H      padinst_hyper_csno1  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[1]     ), .C(                  ), .PAD( pad_hyper_csn1  ), 
-                                                .PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
+    // PDDWUWSWCDG_H      padinst_hyper_csno1  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[1]     ), .C(                  ), .PAD( pad_hyper_csn1  ), 
+                                                // .PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
     PDDWUWSWCDG_H      padinst_hyper_ck     (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_ck_o         ), .C(               ), .PAD( pad_hyper_ck    ), 
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) ); 
     PDDWUWSWCDG_H      padinst_hyper_ckno   (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_ck_no        ), .C(               ), .PAD( pad_hyper_ckn   ), 
@@ -97,7 +98,7 @@ module hyper_macro
 
     udma_hyper_top #(
     	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
-    	.TRANS_SIZE     (16),
+    	.TRANS_SIZE     (TRANS_SIZE),
     	.DELAY_BIT_WIDTH(5),
     	.NB_CH          (1)
     ) i_udma_hyper_top (
