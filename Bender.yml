@@ -5,10 +5,18 @@ package:
 
 dependencies:
   udma_core:    {git: "https://github.com/pulp-platform/udma_core.git", version: 2.0.0 }
+  tech_cells_generic: { git: "https://github.com/pulp-platform/tech_cells_generic.git", version: 0.2.4 }
+
 
 sources:
-  # pulp_soc
-  - include_dirs:
+  - target: hyper_macro #if it's implemented as a macro
+    include_dirs:
+      - udma-hyperbus/src
+    files:
+      - udma-hyperbus/src/hyper_pkg.sv
+
+  - target: not(hyper_macro) # if it's being synthesized
+    include_dirs:
       - udma-hyperbus/src
     files:
       - udma-hyperbus/src/hyper_pkg.sv
@@ -48,9 +56,13 @@ sources:
       - udma-hyperbus/src/udma_hyper_busy_phy.sv
       - udma-hyperbus/src/udma_hyper_top.sv
       - udma-hyperbus/src/udma_hyper_wrap.sv
-      - udma-hyperbus/src/hyper_macro.sv
       - udma-hyperbus/src/hyper_macro_bridge.sv
+      - udma-hyperbus/src/hyper_macro.sv
       - udma-hyperbus/src/hyperbus_delay_line.sv
+
+  # - target: hyper_macro
+  #   define:
+  #     HYPER_MACRO: ~
 
   #- target: not(synthesis)
   #  files:
