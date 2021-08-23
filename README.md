@@ -6,5 +6,11 @@ Its drivers can be found in the [regression_tests](https://github.com/pulp-platf
 
 If the module is implemented as a hard macro, the `-t hyper_macro` bender target can be used to omit all the RTL sources during script generation. In this case only the utility pakage `hyper_pkg.sv` file will be part of the script generation.
 
+# Simulation
+To run a standalone functional simulation to assess basi cunctionality of the HyperBus, run the following commands:
+`make checkout scripts-bender-vsim sim`
+
+Once the Modelsim window appear, run the simulation with `run -a`
+
 
 
