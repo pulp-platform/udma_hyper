@@ -1,7 +1,7 @@
 # @Author: Alfio Di Mauro
 # @Date:   2021-08-16 16:49:29
 # @Last Modified by:   Alfio Di Mauro
-# @Last Modified time: 2021-08-16 17:17:35
+# @Last Modified time: 2021-08-23 11:41:17
 
 ########################
 # set up some vars
@@ -37,7 +37,7 @@ close $f
 #  ------------------------------------------------------------------------------
 
 source scripts/hyper_constraints.sdc
-set_dont_touch [get_cells {i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i}]
+
 #############
 # Compile
 #############
