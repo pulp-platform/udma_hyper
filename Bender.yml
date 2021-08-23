@@ -60,6 +60,10 @@ sources:
       - udma-hyperbus/src/hyper_macro.sv
       - udma-hyperbus/src/hyperbus_delay_line.sv
 
+    - target: test
+      files:
+        -  udma-hyperbus/tb/hyper_macro_tb.sv
+
   # - target: hyper_macro
   #   define:
   #     HYPER_MACRO: ~

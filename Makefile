@@ -26,28 +26,66 @@ BRANCH ?= master
 
 VLOG_ARGS += -suppress 2583 -suppress 13314
 BENDER_SIM_BUILD_DIR = sim
-BENDER_SYNTH_DIR = synopsys/scripts
 
-
-ifdef TSMC16                                                
+ifdef GF22
+export GF22
+BENDER_SYNTH_DIR ?= gf22/synopsys/scripts
+BENDER_TARGETS += -t gf22_SC8T -t hyper_external
+else ifdef TSMC16
 export TSMC16
-BENDER_TARGETS += -t tsmc16 -t tech_cells_tsmc16_pads_exclude
+BENDER_SYNTH_DIR ?= tsmc16/synopsys/scripts
+BENDER_TARGETS += -t synthesis -t tsmc16 -t tech_cells_tsmc16_pwr_cells_exclude -t hyper_external -t hyper_macro
+else
+BENDER_TARGETS += -t tech_cells_tsmc16_pads_include -t hyper_external
 endif
 
-ifdef TSMC16_SIM                                                
-export TSMC16_SIM
-BENDER_TARGETS += -t tsmc16 -t tech_cells_tsmc16_pads_include -t tech_cells_tsmc16_clk_cells_exclude
+scripts-bender-vsim: | Bender.lock
+	echo 'set ROOT [file normalize [file dirname [info script]]/..]' > $(BENDER_SIM_BUILD_DIR)/compile.tcl
+	./bender script vsim \
+		--vlog-arg="$(VLOG_ARGS)" --vcom-arg="" \
+		-t rtl -t test $(BENDER_TARGETS) \
+		| grep -v "set ROOT" >> $(BENDER_SIM_BUILD_DIR)/compile.tcl
+
+scripts-bender-vsim_tech_cells: | Bender.lock
+ifdef TSMC16
+	echo 'set ROOT [file normalize [file dirname [info script]]/..]' > $(BENDER_SIM_BUILD_DIR)/compile_tech_cells.tcl
+	echo 'set SIRACUSA_IPS_PATH ' $(SIRACUSA_IPS_PATH) >> $(BENDER_SIM_BUILD_DIR)/compile_tech_cells.tcl
+	./bender -d ../tech_cell_models script vsim -t test $(CELL_FLAVORS) $(BENDER_TARGETS) \
+     | grep -v "set ROOT" >> $(BENDER_SIM_BUILD_DIR)/compile_tech_cells.tcl
+else
+	@true
 endif
+
+$(BENDER_SIM_BUILD_DIR)/compile.tcl: Bender.lock
+	echo 'set ROOT [file normalize [file dirname [info script]]/..]' > $(BENDER_SIM_BUILD_DIR)/compile.tcl
+	./bender script vsim \
+		--vlog-arg="$(VLOG_ARGS)" --vcom-arg="" \
+		-t rtl -t test -t tech_cells_tsmc_pads_include $(BENDER_TARGETS) \
+		| grep -v "set ROOT" >> $(BENDER_SIM_BUILD_DIR)/compile.tcl
+
+$(BENDER_SIM_BUILD_DIR)/compile_tech_cells.tcl: | Bender.lock
+ifdef TSMC16
+	echo 'set ROOT [file normalize [file dirname [info script]]/..]' > $(BENDER_SIM_BUILD_DIR)/compile_tech_cells.tcl
+	./bender -d ../tech_cell_models script vsim -t test $(CELL_FLAVORS) $(BENDER_TARGETS) \
+	  | grep -v "set ROOT" >> $(BENDER_SIM_BUILD_DIR)/compile_tech_cells.tcl
+else
+	@true
+endif
+
+scripts-bender-synopsys: | Bender.lock
+	mkdir -p $(BENDER_SYNTH_DIR)
+	./bender script synopsys \
+	-t asic $(BENDER_TARGETS) > $(BENDER_SYNTH_DIR)/analyze_auto.tcl
+
+BENDER_LOCAL_FILE = $(shell find -name Bender.local)
+Bender.lock: bender Bender.yml $(BENDER_LOCAL_FILE)
+	./bender update
+	touch Bender.lock
 
 .PHONY: checkout
 ## Checkout/update dependencies using IPApprox or Bender
 
 checkout: bender
-	./bender update
-	touch Bender.lock
-
-BENDER_LOCAL_FILE = $(shell find -name Bender.local)
-Bender.lock: bender Bender.yml $(BENDER_LOCAL_FILE)
 	./bender update
 	touch Bender.lock
 
@@ -58,25 +96,6 @@ clean:
 # 	rm -rf $(VSIM_PATH)
 	$(MAKE) -C sim BENDER=$(BENDER) clean
 
-scripts-bender-vsim: | Bender.lock
-	echo 'set ROOT [file normalize [file dirname [info script]]/..]' > $(BENDER_SIM_BUILD_DIR)/compile.tcl
-	./bender script vsim \
-		--vlog-arg="$(VLOG_ARGS)" --vcom-arg="" \
-		-t rtl -t test $(BENDER_TARGETS) \
-		| grep -v "set ROOT" >> $(BENDER_SIM_BUILD_DIR)/compile.tcl
-
-$(BENDER_SIM_BUILD_DIR)/compile.tcl: Bender.lock
-	echo 'set ROOT [file normalize [file dirname [info script]]/..]' > $(BENDER_SIM_BUILD_DIR)/compile.tcl
-	./bender script vsim \
-		--vlog-arg="$(VLOG_ARGS)" --vcom-arg="" \
-		-t rtl -t test -t tech_cells_tsmc_pads_include $(BENDER_TARGETS) \
-		| grep -v "set ROOT" >> $(BENDER_SIM_BUILD_DIR)/compile.tcl
-
-scripts-bender-synopsys: | Bender.lock
-	mkdir -p $(BENDER_SYNTH_DIR)
-	./bender script synopsys \
-	-t asic $(BENDER_TARGETS) > $(BENDER_SYNTH_DIR)/analyze_auto.tcl
-
 build: $(BENDER_SIM_BUILD_DIR)/compile.tcl
 	@test -f Bender.lock || { echo "ERROR: Bender.lock file does not exist. Did you run make checkout in bender mode?"; exit 1; }
 	@test -f $(BENDER_SIM_BUILD_DIR)/compile.tcl || { echo "ERROR: sim/compile.tcl file does not exist. Did you run make scripts in bender mode?"; exit 1; }
@@ -85,8 +104,6 @@ build: $(BENDER_SIM_BUILD_DIR)/compile.tcl
 
 sim: build
 	cd sim && $(MAKE) BENDER=bender sim
-
-
 
 ## Download the IP management tool bender binary
 bender:
