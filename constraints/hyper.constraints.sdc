@@ -49,3 +49,6 @@ set_max_delay -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/ph
 set_propagated_clock [all_clocks]
 
 
+set_dont_touch [get_cells {i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i}]
+
+
