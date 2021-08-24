@@ -14,33 +14,34 @@
 
 
 module udma_hyper_reg_if_common #(
-                          parameter L2_AWIDTH_NOAL = 12,
-                          parameter TRANS_SIZE     = 16,
-                          parameter NB_CH          = 1,
-                          parameter DELAY_BIT_WIDTH =3,
-                          parameter MAX_NB_TRAN     = 8
-                          ) (
-	                     input logic                        clk_i,
-	                     input logic                        rst_ni,
+  parameter L2_AWIDTH_NOAL = 12,
+  parameter TRANS_SIZE     = 16,
+  parameter NB_CH          = 1,
+  parameter DELAY_BIT_WIDTH =3,
+  parameter MAX_NB_TRAN     = 8
+) (
+	input logic                        clk_i,
+	input logic                        rst_ni,
 
-	                     input logic [31:0]                 cfg_data_i,
-	                     input logic [4:0]                  cfg_addr_i,
-	                     input logic                        cfg_valid_i,
-	                     input logic                        cfg_reg_rwn_i,
-                             output logic [31:0]                cfg_data_o,
-	                     output logic                       cfg_ready_o,
+	input logic [31:0]                 cfg_data_i,
+	input logic [4:0]                  cfg_addr_i,
+	input logic                        cfg_valid_i,
+	input logic                        cfg_reg_rwn_i,
+  output logic [31:0]                cfg_data_o,
+  output logic                       cfg_ready_o,
 
-                             output logic [4:0]                 cfg_t_latency_access_o,
-                             output logic                       cfg_en_latency_additional_o,
-                             output logic [31:0]                cfg_t_cs_max_o,
-                             output logic [31:0]                cfg_t_read_write_recovery_o,
-                             output logic [DELAY_BIT_WIDTH-1:0] cfg_t_rwds_delay_line_o,
-                             output logic [3:0]                 cfg_t_variable_latency_check_o,
-                             output logic [2:0 ]                cfg_page_bound_o,
-                             output logic [1:0]                 cfg_mem_sel_o,
-
-                             input logic [NB_CH-1:0]            busy_vec_i
-                             );
+  output logic [4:0]                 cfg_t_latency_access_o,
+  output logic                       cfg_en_latency_additional_o,
+  output logic [31:0]                cfg_t_cs_max_o,
+  output logic [31:0]                cfg_t_read_write_recovery_o,
+  output logic [DELAY_BIT_WIDTH-1:0] cfg_t_rwds_delay_line_o,
+  output logic [3:0]                 cfg_t_variable_latency_check_o,
+  output logic [2:0 ]                cfg_page_bound_o,
+  output logic [1:0]                 cfg_mem_sel_o,
+  output udma_pkg::ch_dest_t         cfg_rx_dest_o,
+  output udma_pkg::ch_dest_t         cfg_tx_dest_o,
+  input logic [NB_CH-1:0]            busy_vec_i
+);
 
   // Configuration register for Hyper bus CHANNEl
    localparam logic[4:0] REG_PAGE_BOUND         = 5'b00000; //BASEADDR+0x00 set the page boundary.
@@ -54,6 +55,14 @@ module udma_hyper_reg_if_common #(
    localparam logic[4:0] MEM_SEL                = 5'b01000; //BASEADDR+0x20 set Memory select: HyperRAM, Hyperflash, or PSRAM 00:Hyper RAM, 01: Hyper Flash, 10:PSRAM
    localparam logic[4:0] TRANS_ID_ALLOC         = 5'b01001; //BASEADDR+0x30 set 2D transfer stride
 
+   // These bits control which address space prefix is used. The udma
+   // peripherals do not use a full 32-bit address space but a smaller one to
+   // reduce the critical path. With these 2 bits, the address prefix is chosen.
+   // 2'b00 -> L2 address (0x1c), 2'b01 -> peripheral address (0x1a1), 2'b10 ->
+   // l1 memory region (0x10), 2'b11 -> (custom prefix from register in
+   // udma_core).
+   localparam logic [4:0] REG_DEST              = 5'b01010; //BASEADDR+0x34 set udma memory Destination for RX channel (bits 1:0) and TX channel (bits 9:8).
+
 
 
    logic [31:0]                                                r_t_latency_access;
@@ -64,6 +73,8 @@ module udma_hyper_reg_if_common #(
    logic [31:0]                                                r_t_variable_latency_check;
    logic [2:0]                                                 r_n_hyperdevice;
    logic [2:0]                                                 r_page_bound;
+   udma_pkg::ch_dest_t                                         r_rx_dest;
+   udma_pkg::ch_dest_t                                         r_tx_dest;
 
    logic [4:0]                                                 s_wr_addr;
    logic [4:0]                                                 s_rd_addr;
@@ -84,6 +95,8 @@ module udma_hyper_reg_if_common #(
    assign cfg_n_hyperdevice_o            = r_n_hyperdevice;
    assign cfg_page_bound_o               = r_page_bound;
    assign cfg_mem_sel_o                  = r_mem_sel;
+   assign cfg_rx_dest_o                  = r_rx_dest;
+   assign cfg_tx_det_o                   = r_tx_dest;
 
 
    always_ff @(posedge clk_i, negedge rst_ni) 
@@ -91,16 +104,17 @@ module udma_hyper_reg_if_common #(
         if(~rst_ni) 
           begin
              
-             r_t_latency_access         <= 32'h6;
-             r_en_latency_additional    <= 32'b1;
-             r_t_cs_max                 <= 32'd665;
-             r_t_read_write_recovery    <= 32'h6;
-             r_t_rwds_delay_line        <= 32'd2;
-             r_t_variable_latency_check <= 32'd3;
-             r_n_hyperdevice <= 32'h1;
-             r_mem_sel <= 2'b0;
-             r_page_bound <= 0;
-
+            r_t_latency_access         <= 32'h6;
+            r_en_latency_additional    <= 32'b1;
+            r_t_cs_max                 <= 32'd665;
+            r_t_read_write_recovery    <= 32'h6;
+            r_t_rwds_delay_line        <= 32'd2;
+            r_t_variable_latency_check <= 32'd3;
+            r_n_hyperdevice            <= 32'h1;
+            r_mem_sel                  <= 2'b0;
+            r_page_bound               <= 0;
+            r_tx_dest                  <= '0;
+            r_rx_dest                  <= '0;
           end
         else
           begin
@@ -143,6 +157,11 @@ module udma_hyper_reg_if_common #(
                       begin
                          r_mem_sel <= cfg_data_i[1:0];
                       end
+                    REG_DEST:
+                      begin
+                        r_rx_dest <= cfg_data_i[0+:udma_pkg::DEST_SIZE];
+                        r_tx_dest <= cfg_data_i[8+:udma_pkg::DEST_SIZE];
+                      end
                   endcase
                end
           end
@@ -174,6 +193,10 @@ module udma_hyper_reg_if_common #(
             cfg_data_o = {{30{1'b0}}, cfg_mem_sel_o};
           TRANS_ID_ALLOC:
             cfg_data_o = {{(32-$clog2(NB_CH)){1'b0}},alloc_id};
+          REG_DEST: begin
+            cfg_data_o[0+:udma_pkg::DEST_SIZE] = r_rx_dest;
+            cfg_data_o[8+:udma_pkg::DEST_SIZE] = r_tx_dest;
+          end
           default:
             cfg_data_o = 'h0;
         endcase

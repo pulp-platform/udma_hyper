@@ -68,6 +68,7 @@ udma_hyper_top #(
 
 	.cfg_rx_startaddr_o ( rx_ch[0].startaddr  ),
 	.cfg_rx_size_o      ( rx_ch[0].size       ),
+  .cfg_rx_dest_o      ( rx_ch[0].destination),
 	.cfg_rx_continuous_o( rx_ch[0].continuous ),
 	.cfg_rx_en_o        ( rx_ch[0].cen        ),
 	.cfg_rx_clr_o       ( rx_ch[0].clr        ),
@@ -82,6 +83,7 @@ udma_hyper_top #(
 
 	.cfg_tx_startaddr_o ( tx_ch[0].startaddr  ),
 	.cfg_tx_size_o      ( tx_ch[0].size       ),
+  .cfg_tx_dest_o      ( tx_ch[0].destination),
 	.cfg_tx_continuous_o( tx_ch[0].continuous ),
 	.cfg_tx_en_o        ( tx_ch[0].cen        ),
 	.cfg_tx_clr_o       ( tx_ch[0].clr        ),
@@ -115,8 +117,6 @@ udma_hyper_top #(
 
 assign rx_ch[0].stream = '0;
 assign rx_ch[0].stream_id = '0;
-assign rx_ch[0].destination = '0;
-assign tx_ch[0].destination = '0;
 
 assign hyper_to_pad.hyper_rwds_o  = hyper_rwds_o[0];
 assign hyper_to_pad.hyper_rwds_oe = hyper_rwds_oe[0];
