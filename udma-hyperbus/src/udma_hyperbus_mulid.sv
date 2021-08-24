@@ -21,10 +21,10 @@ module udma_hyperbus_mulid
     parameter NB_CH           =8
 ) 
 (
-    input  logic                      sys_clk_i,
-    input  logic                      phy_clk_i,
-    input  logic                      rst_ni,
-    input  logic                      phy_rst_ni,
+    input logic                       sys_clk_i,
+    input logic                       phy_clk_i,
+    input logic                       rst_ni,
+    input logic                       phy_rst_ni,
 
     output logic [31:0]               rx_data_udma_o,
     output logic                      rx_valid_udma_o,
@@ -43,6 +43,7 @@ module udma_hyperbus_mulid
 
     output logic [L2_AWIDTH_NOAL-1:0] udma_rx_startaddr_o,
     output logic [TRANS_SIZE-1:0]     udma_rx_size_o,
+    output udma_pkg::ch_dest_t        cfg_rx_dest_o,
     output logic [1:0]                cfg_rx_datasize_o,
     output logic                      cfg_rx_continuous_o,
     output logic                      udma_rx_en_o,
@@ -54,6 +55,7 @@ module udma_hyperbus_mulid
 
     output logic [L2_AWIDTH_NOAL-1:0] udma_tx_startaddr_o,
     output logic [TRANS_SIZE-1:0]     udma_tx_size_o,
+    output udma_pkg::ch_dest_t        cfg_tx_dest_o,
     output logic [1:0]                cfg_tx_datasize_o,
     output logic                      cfg_tx_continuous_o,
     output logic                      udma_tx_en_o,
@@ -69,9 +71,9 @@ module udma_hyperbus_mulid
     output logic                      hyper_ck_o,
     output logic                      hyper_ck_no,
     output logic [1:0]                hyper_rwds_o,
-    input  logic                      hyper_rwds_i,
+    input logic                       hyper_rwds_i,
     output logic [1:0]                hyper_rwds_oe_o,
-    input  logic [15:0]               hyper_dq_i,
+    input logic [15:0]                hyper_dq_i,
     output logic [15:0]               hyper_dq_o,
     output logic [1:0]                hyper_dq_oe_o,
     output logic                      hyper_reset_no,
@@ -359,6 +361,8 @@ module udma_hyperbus_mulid
 
       .cfg_page_bound_o               ( twd_page_bound               ),
       .cfg_mem_sel_o                  ( twd_mem_sel                  ),
+      .cfg_rx_dest_o,
+      .cfg_tx_dest_o,
       .busy_vec_i                     ( busy_vec                     )
 
    );
