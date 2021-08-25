@@ -48,6 +48,10 @@ import udma_pkg::L2_AWIDTH_NOAL;
 logic is_hyper_read_q;
 logic is_hyper_read_d;
 
+logic[31:0] s_cfg_data_out;
+
+assign cfg_data_o[0] = s_cfg_data_out;
+assign cfg_data_o[1] = s_cfg_data_out;
 
 udma_hyper_top #(
 	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
@@ -60,11 +64,11 @@ udma_hyper_top #(
 	.rstn_i             ( rstn_i             ),
 
 	.cfg_data_i         ( cfg_data_i         ),
-	.cfg_addr_i         ( cfg_addr_i         ),
-	.cfg_valid_i        ( cfg_valid_i        ),
+	.cfg_addr_i         ( {cfg_valid_i[1], cfg_addr_i}),
+	.cfg_valid_i        ( |cfg_valid_i       ),
 	.cfg_rwn_i          ( cfg_rwn_i          ),
-	.cfg_ready_o        ( cfg_ready_o        ),
-	.cfg_data_o         ( cfg_data_o         ),
+	.cfg_ready_o        ( {2{cfg_ready_o}}   ),
+	.cfg_data_o         ( s_cfg_data_out     ),
 
 	.cfg_rx_startaddr_o ( rx_ch[0].startaddr  ),
 	.cfg_rx_size_o      ( rx_ch[0].size       ),

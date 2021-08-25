@@ -101,6 +101,7 @@ module hyper_macro
 
     	.cfg_rx_startaddr_o ( hyper_linch_rx_req_o.startaddr  ),
     	.cfg_rx_size_o      ( hyper_linch_rx_req_o.size       ),
+      .cfg_rx_dest_o      ( hyper_linch_rx_req_o.destination),
     	.cfg_rx_continuous_o( hyper_linch_rx_req_o.continuous ),
     	.cfg_rx_en_o        ( hyper_linch_rx_req_o.cen        ),
     	.cfg_rx_clr_o       ( hyper_linch_rx_req_o.clr        ),
@@ -115,6 +116,7 @@ module hyper_macro
 
     	.cfg_tx_startaddr_o ( hyper_linch_tx_rsp_o.startaddr  ),
     	.cfg_tx_size_o      ( hyper_linch_tx_rsp_o.size       ),
+      .cfg_tx_dest_o      ( hyper_linch_tx_rsp_o.destination),
     	.cfg_tx_continuous_o( hyper_linch_tx_rsp_o.continuous ),
     	.cfg_tx_en_o        ( hyper_linch_tx_rsp_o.cen        ),
     	.cfg_tx_clr_o       ( hyper_linch_tx_rsp_o.clr        ),
@@ -142,6 +144,9 @@ module hyper_macro
     	.hyper_dq_oe_o      ( hyper_dq_oe_o                   ),
     	.hyper_reset_no     ( hyper_reset_no                  )
     );
+
+    assign hyper_linch_rx_req_o.stream = '0;
+    assign hyper_linch_rx_req_o.stream_id = '0;
 
     logic is_hyper_read_q;
     logic is_hyper_read_d;
