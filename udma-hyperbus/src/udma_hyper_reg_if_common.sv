@@ -96,7 +96,7 @@ module udma_hyper_reg_if_common #(
    assign cfg_page_bound_o               = r_page_bound;
    assign cfg_mem_sel_o                  = r_mem_sel;
    assign cfg_rx_dest_o                  = r_rx_dest;
-   assign cfg_tx_det_o                   = r_tx_dest;
+   assign cfg_tx_dest_o                  = r_tx_dest;
 
 
    always_ff @(posedge clk_i, negedge rst_ni) 

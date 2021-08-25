@@ -126,8 +126,8 @@ module udma_hyper_top #(
         cfg_valid_s[0] = ~cfg_addr_i[5] && cfg_valid_i;
         cfg_valid_s[1] = cfg_addr_i[5] && cfg_valid_i;
         // pick the right response according to the address
-        cfg_ready_o = ~cfg_demux_s ? cfg_ready_s[0] : cfg_ready_s[1];
-        cfg_data_o = cfg_demux_s ? cfg_rdata_s[0] : cfg_rdata_s[1];
+        cfg_ready_o = cfg_demux_s ? cfg_ready_s[1] : cfg_ready_s[0];
+        cfg_data_o = cfg_demux_s ? cfg_rdata_s[1] : cfg_rdata_s[0];
     end
 
     udma_hyperbus_mulid #(

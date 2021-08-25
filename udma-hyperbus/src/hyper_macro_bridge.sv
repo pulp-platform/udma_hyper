@@ -41,14 +41,15 @@ end
 // assign the configuration request
 always_comb begin : proc_conf_req
 	hyper_cfg_req_o.data = cfg_data_i;
-	hyper_cfg_req_o.addr = cfg_addr_i;
-	hyper_cfg_req_o.valid = cfg_valid_i;
+	hyper_cfg_req_o.addr = {cfg_valid_i[1], cfg_addr_i};
+	hyper_cfg_req_o.valid = |cfg_valid_i;
 	hyper_cfg_req_o.rwn = cfg_rwn_i;
 end
 
 always_comb begin : proc_conf_rsp
-	cfg_ready_o = hyper_cfg_rsp_i.ready;
-	cfg_data_o = hyper_cfg_rsp_i.data;
+	cfg_ready_o   = {2{hyper_cfg_rsp_i.ready}} & cfg_valid_i;
+	cfg_data_o[0] = hyper_cfg_rsp_i.data;
+  cfg_data_o[1] = hyper_cfg_rsp_i.data;
 end
 
 always_comb begin : proc_tx_req
