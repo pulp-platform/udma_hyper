@@ -40,7 +40,7 @@ module hyper_macro
 	inout wire logic pad_hyper_ck,
 	inout wire logic pad_hyper_ckn,
 	inout wire logic pad_hyper_csn0,
-    // inout wire logic pad_hyper_csn1,
+  inout wire logic pad_hyper_csn1,
 	inout wire logic pad_hyper_rwds,
 	inout wire logic pad_hyper_dq0,
 	inout wire logic pad_hyper_dq1,
@@ -67,9 +67,8 @@ module hyper_macro
     logic evt_eot_hyper_s;
 
     // TODO: Replace with actual pads!
-    // TODO check why CS 1 is used instead of the 0, connecting the tested one for the moment
     pad_functional_pd padinst_hyper_csno0  (.OEN( 1'b0                ), .I ( hyper_cs_no[0]  ), .O (               ), .PEN ( 1'b0 ), .PAD ( pad_hyper_csn0  ));
-    //pad_functional_pd padinst_hyper_csno1  (.OEN( 1'b0                ), .I ( hyper_cs_no[1]  ), .O (               ), .PEN ( 1'b0 ), .PAD ( pad_hyper_csn1  ));
+    pad_functional_pd padinst_hyper_csno1  (.OEN( 1'b0                ), .I ( hyper_cs_no[1]  ), .O (               ), .PEN ( 1'b0 ), .PAD ( pad_hyper_csn1  ));
     pad_functional_pd padinst_hyper_ck     (.OEN( 1'b0                ), .I ( hyper_ck_o      ), .O (               ), .PEN ( 1'b0 ), .PAD ( pad_hyper_ck    ));
     pad_functional_pd padinst_hyper_ckno   (.OEN( 1'b0                ), .I ( hyper_ck_no     ), .O (               ), .PEN ( 1'b0 ), .PAD ( pad_hyper_ckn   ));
     pad_functional_pd padinst_hyper_rwds0  (.OEN( ~hyper_rwds_oe_o[0] ), .I ( hyper_rwds_o[0] ), .O ( hyper_rwds_i  ), .PEN ( 1'b0 ), .PAD ( pad_hyper_rwds  ));
