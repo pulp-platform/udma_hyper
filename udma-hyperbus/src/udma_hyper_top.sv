@@ -112,14 +112,7 @@ module udma_hyper_top #(
     logic [NB_CH:0][31:0] cfg_rdata_s;
     logic cfg_demux_s;
 
-    // hold the demux signal
-    always_ff @(posedge periph_clk_i or negedge rstn_i) begin : proc_cfg_demux
-        if(~rstn_i) begin
-            cfg_demux_s <= 0;
-        end else if (cfg_valid_i) begin
-            cfg_demux_s <= cfg_addr_i[5];
-        end
-    end
+    assign cfg_demux_s = cfg_addr_i[5];
 
     always_comb begin : proc_demux_cfg
         // chose the valid according to the address
