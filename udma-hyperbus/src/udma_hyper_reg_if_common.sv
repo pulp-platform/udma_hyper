@@ -53,15 +53,14 @@ module udma_hyper_reg_if_common #(
    localparam logic[4:0] REG_T_VARI_LATENCY     = 5'b00110; //BASEADDR+0x18 set t_variable_latency_check
    localparam logic[4:0] N_HYPER_DEVICE         = 5'b00111; //BASEADDR+0x1C set the number of connected devices
    localparam logic[4:0] MEM_SEL                = 5'b01000; //BASEADDR+0x20 set Memory select: HyperRAM, Hyperflash, or PSRAM 00:Hyper RAM, 01: Hyper Flash, 10:PSRAM
-   localparam logic[4:0] TRANS_ID_ALLOC         = 5'b01001; //BASEADDR+0x30 set 2D transfer stride
-
+   localparam logic[4:0] TRANS_ID_ALLOC         = 5'b01001; //BASEADDR+0x24 set 2D transfer stride
    // These bits control which address space prefix is used. The udma
    // peripherals do not use a full 32-bit address space but a smaller one to
    // reduce the critical path. With these 2 bits, the address prefix is chosen.
    // 2'b00 -> L2 address (0x1c), 2'b01 -> peripheral address (0x1a1), 2'b10 ->
    // l1 memory region (0x10), 2'b11 -> (custom prefix from register in
    // udma_core).
-   localparam logic [4:0] REG_DEST              = 5'b01010; //BASEADDR+0x34 set udma memory Destination for RX channel (bits 1:0) and TX channel (bits 9:8).
+   localparam logic [4:0] REG_DEST              = 5'b01010; //BASEADDR+0x28 set udma memory Destination for RX channel (bits 1:0) and TX channel (bits 9:8).
 
 
 
