@@ -34,7 +34,7 @@ BENDER_TARGETS += -t gf22_SC8T -t hyper_external
 else ifdef TSMC16
 export TSMC16
 BENDER_SYNTH_DIR ?= tsmc16/synopsys/scripts
-BENDER_TARGETS += -t synthesis -t tsmc16 -t tech_cells_tsmc16_pwr_cells_exclude -t hyper_external -t hyper_macro
+BENDER_TARGETS += -t synthesis -t tsmc16 -t tech_cells_tsmc16_pwr_cells_exclude -t hyper_external
 else
 BENDER_TARGETS += -t tech_cells_tsmc16_pads_include -t hyper_external
 endif

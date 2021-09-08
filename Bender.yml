@@ -15,6 +15,11 @@ sources:
     files:
       - udma-hyperbus/src/hyper_pkg.sv
       - udma-hyperbus/src/hyper_macro_bridge.sv
+  
+  - target: all(hyper_macro,test)
+    files:
+      - udma-hyperbus/src/hyper_macro_stub.sv
+
 
   - target: not(hyper_macro) # if it's being synthesized
     include_dirs:
