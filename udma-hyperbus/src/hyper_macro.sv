@@ -40,7 +40,7 @@ module hyper_macro
 	inout wire logic pad_hyper_ck,
 	inout wire logic pad_hyper_ckn,
 	inout wire logic pad_hyper_csn0,
-  inout wire logic pad_hyper_csn1,
+    inout wire logic pad_hyper_csn1,
 	inout wire logic pad_hyper_rwds,
 	inout wire logic pad_hyper_dq0,
 	inout wire logic pad_hyper_dq1,
