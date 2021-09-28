@@ -39,4 +39,5 @@ sources:
   - udma-hyperbus/src/udma_cmd_queue.sv
   - udma-hyperbus/src/udma_hyper_busy.sv
   - udma-hyperbus/src/udma_hyper_busy_phy.sv
+  - udma-hyperbus/src/udma_hyper.sv
   - udma-hyperbus/src/udma_hyper_top.sv
