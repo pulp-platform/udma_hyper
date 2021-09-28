@@ -140,7 +140,7 @@ module udma_cmd_queue #(
            .busy_o              ( busy_o                )
 );
 
-   io_generic_fifo_hyper  #(
+   io_generic_fifo  #(
       .DATA_WIDTH         ( L2_AWIDTH_NOAL*2+TRANS_SIZE*6+32+16+1+1+1+1+1 ),
       .BUFFER_DEPTH       ( BUFFER_DEPTH                                  ),
       .LOG_BUFFER_DEPTH   ( $clog2(BUFFER_DEPTH)                          )

@@ -20,7 +20,8 @@ module udma_hyper_top #(
  )
  (
      input  logic                      sys_clk_i,
-     input  logic                      periph_clk_i,
+     input  logic                      clk_phy_i,
+     input  logic                      clk_phy_i_90,
      input  logic                      rstn_i,
 
      input  logic [31:0]               cfg_data_i,
@@ -91,7 +92,8 @@ module udma_hyper_top #(
     ) udma_hyperbus_i
     (
         .sys_clk_i               ( sys_clk_i                    ),
-        .phy_clk_i               ( periph_clk_i                 ),
+        .clk_phy_i               ( clk_phy_i                    ),
+        .clk_phy_i_90            ( clk_phy_i_90                 ),
         .rst_ni                  ( rstn_i                       ),
         .phy_rst_ni              ( rstn_i                       ),
 

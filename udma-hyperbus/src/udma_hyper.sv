@@ -22,7 +22,8 @@ module udma_hyperbus
 ) 
 (
     input logic                        sys_clk_i,
-    input logic                        phy_clk_i,
+    input  logic                       clk_phy_i,
+    input  logic                       clk_phy_i_90,
     input logic                        rst_ni,
     input logic                        phy_rst_ni,
 
@@ -105,7 +106,8 @@ module udma_hyperbus
  
 );
 
-      localparam BUFFER_DEPTH=8;
+   
+   localparam BUFFER_DEPTH=8;
    localparam LOG_NB_CH = (NB_CH == 1) ? 1 : $clog2(NB_CH);
 
    logic                          clk0;
@@ -294,6 +296,11 @@ module udma_hyperbus
 
    assign running_trans_phy = pack_trans_valid | (!pack_trans_ready) | unpack_trans_valid | (!unpack_trans_ready) | phy_trans_valid;
 
+   logic                               clk0;
+   logic                               clk90;
+   assign clk0  =    clk_phy_i;
+   assign clk90 = clk_phy_i_90;
+
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////Control Path////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
@@ -463,9 +470,10 @@ module udma_hyperbus
 /////////////////////////Transaction FIFO/////////////////////////////////
 // The data width here is the sum of the width of the transaction elements.
 
-   
-//   udma_dc_fifo_hyper #(L2_AWIDTH_NOAL*2+TRANS_SIZE*2+32*3+16+5+4*2+3+2+1*5+LOG_NB_CH, BUFFER_DEPTH) u_dc_tran
-   udma_dc_fifo_hyper #(L2_AWIDTH_NOAL*2+TRANS_SIZE*2+32*3+16+5+3+DELAY_BIT_WIDTH+4+2+1*5+LOG_NB_CH, BUFFER_DEPTH) u_dc_tran
+   udma_dc_fifo #(
+      .DATA_WIDTH(L2_AWIDTH_NOAL*2+TRANS_SIZE*2+32*3+16+5+3+DELAY_BIT_WIDTH+4+2+1*5+LOG_NB_CH),
+      .BUFFER_DEPTH(BUFFER_DEPTH) 
+     ) u_dc_tran
      (
       .dst_clk_i          ( clk0                                   ),
       .dst_rstn_i         ( phy_rst_ni                             ),
@@ -500,14 +508,16 @@ module udma_hyperbus
       .src_ready_o        ( ond_trans_ready                         )
       );
 
-   udma_dc_fifo_hyper #(L2_AWIDTH_NOAL*2+TRANS_SIZE*2+1+LOG_NB_CH+1, 4) u_dc_toduma
-     (
+   udma_dc_fifo #(
+       .DATA_WIDTH(L2_AWIDTH_NOAL*2+TRANS_SIZE*2+1+LOG_NB_CH+1),
+       .BUFFER_DEPTH(4)
+     ) u_dc_toduma (
       .dst_clk_i          ( sys_clk_i                               ),
       .dst_rstn_i         ( rst_ni                                  ),
 
       .dst_data_o         ( {toudma_tx_start_addr, toudma_tx_size,
                              toudma_rw_hyper, toudma_rx_start_addr,
-                             toudma_rx_size, toudma_trans_id}                        ),
+                             toudma_rx_size, toudma_trans_id}       ),
       .dst_valid_o        ( toudma_trans_valid                      ),
       .dst_ready_i        ( 1'b1                                    ),
 
@@ -521,8 +531,12 @@ module udma_hyperbus
       .src_ready_o        (                                         )
      );
 
-  udma_cfg_outbuff #(L2_AWIDTH_NOAL, LOG_NB_CH, NB_CH, TRANS_SIZE) udma_cfg_outbuff_i
-    (
+  udma_cfg_outbuff #(
+       .L2_AWIDTH_NOAL(L2_AWIDTH_NOAL),
+       .ID_WIDTH(LOG_NB_CH),
+       .NB_CH(NB_CH),
+       .TRANS_SIZE(TRANS_SIZE)
+    ) udma_cfg_outbuff_i (
       .clk_i                   ( sys_clk_i            ),
       .rst_ni                  ( rst_ni               ),
 
@@ -706,8 +720,10 @@ module udma_hyperbus
       .data_o             ( rx_data_fifo          )
    );
 
-   udma_dc_fifo_hyper #(32,BUFFER_DEPTH) u_dc_rx
-     (
+   udma_dc_fifo #(
+     .DATA_WIDTH(32),
+     .BUFFER_DEPTH(BUFFER_DEPTH)
+    ) u_dc_rx     (
       .dst_clk_i          ( sys_clk_i            ),
       .dst_rstn_i         ( rst_ni               ),
       .dst_data_o         ( rx_data_udma_o       ),
@@ -766,8 +782,10 @@ module udma_hyperbus
         .ready_o ( data_tx_ready_o )
     );   
    
-   udma_dc_fifo_hyper #(32,BUFFER_DEPTH) u_dc_tx
-     (
+   udma_dc_fifo #(
+     .DATA_WIDTH(32),
+     .BUFFER_DEPTH(BUFFER_DEPTH)
+    ) u_dc_tx (
       .dst_clk_i          ( clk0                 ),
       .dst_rstn_i         ( phy_rst_ni           ),
       .dst_data_o         ( tx_data_fifo         ),

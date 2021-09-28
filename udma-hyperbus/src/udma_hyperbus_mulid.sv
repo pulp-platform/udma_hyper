@@ -22,7 +22,8 @@ module udma_hyperbus_mulid
 ) 
 (
     input  logic                      sys_clk_i,
-    input  logic                      phy_clk_i,
+    input  logic                      clk_phy_i,
+    input  logic                      clk_phy_i_90,
     input  logic                      rst_ni,
     input  logic                      phy_rst_ni,
 
@@ -85,9 +86,6 @@ module udma_hyperbus_mulid
     output logic [3:0]                debug_hyper_phy_state_o
  
 );
-    logic                   clk0;    // Clock
-    logic                   clk90;    // Clock
-
     // configuration
     logic [31:0]                config_t_latency_access;
     logic [31:0]                config_en_latency_additional;
@@ -132,7 +130,8 @@ module udma_hyperbus_mulid
     .NB_CH           (NB_CH)
    ) udma_hyper (    
         .sys_clk_i               ( sys_clk_i                    ),
-        .phy_clk_i               ( phy_clk_i                    ),
+        .clk_phy_i               ( clk_phy_i                    ),
+        .clk_phy_i_90            ( clk_phy_i_90                 ),
         .rst_ni                  ( rst_ni                       ),
         .phy_rst_ni              ( phy_rst_ni                   ),
 
@@ -174,10 +173,7 @@ module udma_hyperbus_mulid
         .cfg_tx_pending_i        ( cfg_tx_pending_i             ),
         .cfg_tx_curr_addr_i      ( cfg_tx_curr_addr_i           ),
         .cfg_tx_bytes_left_i     ( cfg_tx_bytes_left_i          ),
-        .evt_eot_hyper_o         ( evt_eot_hyper_o              ),
-
-        .clk0_o (clk0),    // Clock
-        .clk90_o(clk90),    // Clock    
+        .evt_eot_hyper_o         ( evt_eot_hyper_o              ),    
         
         .config_t_latency_access(config_t_latency_access),
         .config_en_latency_additional(config_en_latency_additional),
@@ -216,8 +212,8 @@ module udma_hyperbus_mulid
     .DELAY_BIT_WIDTH(DELAY_BIT_WIDTH),
     .BURST_WIDTH(TRANS_SIZE)
   ) phy_i (
-    .clk0                            ( clk0                         ),
-    .clk90                           ( clk90                        ),
+    .clk0                            ( clk_phy_i                    ),
+    .clk90                           ( clk_phy_i_90                 ),
     .rst_ni                          ( phy_rst_ni                   ),
     .test_en_ti                      ( 1'b0                         ),
     .clk_test                        (),
