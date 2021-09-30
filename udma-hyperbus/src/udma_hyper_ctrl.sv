@@ -289,6 +289,7 @@ module udma_hyper_ctrl
                    end
               end
               READTRANSACTION: begin
+                 phy_trans_valid_o <= 1'b0;
                  if(remained_data_o!=0)
                    begin
                       if(rx_valid_phy_i&rx_ready_phy_i) remained_data_o <= remained_data_o -1;
@@ -300,6 +301,7 @@ module udma_hyper_ctrl
                    end
               end
               WRITETRANSACTION: begin
+                 phy_trans_valid_o <= 1'b0;
                  if(remained_data_o != 0)
                    begin
                       if( tx_valid_phy_i&tx_ready_phy_i ) remained_data_o <= remained_data_o -1;

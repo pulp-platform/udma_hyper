@@ -102,7 +102,8 @@ module udma_hyperbus
     input logic [31:0]                 rx_data_i,
     input logic                        rx_error_i,
     // spram select
-    output logic [1:0]                 mem_sel_o
+    output logic [1:0]                 mem_sel_o,
+    output logic                       busy_o
  
 );
 
@@ -292,6 +293,8 @@ module udma_hyperbus
    logic running_trans_sys;
    logic [NB_CH-1:0] busy_vec;
 
+   assign busy_o = |busy_vec;
+   
    logic r_running_trans_phy;
 
    assign running_trans_phy = pack_trans_valid | (!pack_trans_ready) | unpack_trans_valid | (!unpack_trans_ready) | phy_trans_valid;
