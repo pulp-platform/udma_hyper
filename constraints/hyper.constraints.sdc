@@ -14,6 +14,7 @@ create_clock -name rwds_clk -period [expr $period_phy] [get_ports pad_hyper_rwds
 create_generated_clock -name clk_phy -source [get_ports periph_clk_i] -divide_by 2 [get_pins i_udma_hyper_top/udma_hyperbus_i/ddr_clk/clk0_o]
 create_generated_clock -name clk_phy_90 -source [get_ports periph_clk_i] -edges {2 4 6} [get_pins i_udma_hyper_top/udma_hyperbus_i/ddr_clk/clk90_o] 
 create_generated_clock -name hyper_ck_o -source [get_pins i_udma_hyper_top/udma_hyperbus_i/ddr_clk/clk90_o] -divide_by 1 [get_ports pad_hyper_ck] 
+create_generated_clock -name hyper_ckn_o -source [get_pins i_udma_hyper_top/udma_hyperbus_i/ddr_clk/clk90_o] -divide_by 1 [get_ports pad_hyper_ckn]
 
 set_clock_groups -asynchronous -group {clk_phy hyper_ck_o}
 set_clock_groups -asynchronous -group {phy_twotimes rwds_clk}
@@ -25,10 +26,11 @@ set_output_delay 1 -clock hyper_ck_o [get_ports $output_ports] -max
 set_output_delay [expr -1*1] -clock hyper_ck_o [get_ports $output_ports] -min -add_delay
 set_output_delay 1 -clock hyper_ck_o [get_ports $output_ports] -max  -clock_fall -add_delay
 set_output_delay [expr -1*1] -clock hyper_ck_o [get_ports $output_ports] -min -clock_fall -add_delay
-set_false_path -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/ddr_out_bus_upper[*].ddr_data_upper/q1]] -rise_to [get_clocks clk_phy_90]
+
 set_false_path -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/ddr_out_bus_lower[*].ddr_data_lower/q1]] -rise_to [get_clocks clk_phy_90]
-set_false_path -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/ddr_out_bus_upper[*].ddr_data_upper/q0]] -fall_to [get_clocks clk_phy_90]
 set_false_path -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/ddr_out_bus_lower[*].ddr_data_lower/q0]] -fall_to [get_clocks clk_phy_90]
+set_false_path -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/ddr_out_bus_upper[*].ddr_data_upper/q1]] -rise_to [get_clocks clk_phy_90]
+set_false_path -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/ddr_out_bus_upper[*].ddr_data_upper/q0]] -fall_to [get_clocks clk_phy_90]
 
 set_max_delay [expr $period_phy/2] -from [get_pins i_udma_hyper_top/udma_hyperbus_i/phy_i/hyper_dq_oe_o] -to [get_ports pad_hyper_dq*]
 set_max_delay [expr $period_phy/2] -from [get_pins i_udma_hyper_top/udma_hyperbus_i/phy_i/hyper_rwds_oe_o] -to [get_ports pad_hyper_rwds*]
@@ -42,7 +44,6 @@ set_max_delay -from [all_fanin -to [get_nets {i_udma_hyper_top/udma_hyperbus_i/p
 set_max_delay -from [all_fanin -to [get_nets {i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/i_cdc_fifo_hyper/src_wptr_gray_q[*]}]] -to [all_fanout -from [get_nets {i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/i_cdc_fifo_hyper/dst_wptr_gray_q[*]}]] [expr $period_phy/2]
 
 set_max_delay -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/i_cdc_fifo_hyper/dst_rptr_bin_q[*]]] -to [all_fanout -from [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/i_cdc_fifo_hyper/src_rptr_gray_q[*]]] [expr $period_phy/2]
-
 set_max_delay -from [all_fanin -to [get_nets i_udma_hyper_top/udma_hyperbus_i/phy_i/read_clk_en]] -to [all_fanout -from [get_nets  i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/read_in_valid]] [expr $period_phy/2]
 
 #set_propagated_clock {rwds_clk }
