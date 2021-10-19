@@ -1,13 +1,14 @@
 # 189MHz for SoC clock and 77MHz for the hyper bus "phy" part, which means 144MHz from phy_clk_i
-set period_sys 6000
-set period_phy 13000
+set period_sys 6
+set period_phy 13
 
-set_ideal_network rst_ni
-set_ideal_network phy_rst_ni
+set_ideal_network rstn_i
+set_ideal_network periph_clk_i
+#set_ideal_network phy_rst_ni
 set_max_area 0
 
 create_clock -name sys_clk -period $period_sys [get_ports sys_clk_i]
-create_clock -name phy_twotimes -period [expr $period_phy/2] [get_ports phy_clk_i]
+create_clock -name phy_twotimes -period [expr $period_phy/2] [get_ports periph_clk_i]
 
 set_false_path -from [get_ports rst_ni] -hold
 set_false_path -from [get_ports phy_rst_ni] -hold
