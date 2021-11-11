@@ -66,6 +66,7 @@ module hyper_macro
 
     logic evt_eot_hyper_s;
 
+`ifndef PULP_FPGA_EMUL
     PDDWUWSWCDG_H      padinst_hyper_csno  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[0]     ), .C(                  ), .PAD( pad_hyper_csn0  ),
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
     PDDWUWSWCDG_H      padinst_hyper_csno1  (.RTE(1'b0), .IE(1'b1), .OEN( 1'b0                 ), .I( hyper_cs_no[1]     ), .C(                  ), .PAD( pad_hyper_csn1  ),
@@ -94,6 +95,94 @@ module hyper_macro
     											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
     PDDWUWSWCDG_H      padinst_hyper_dqio7  (.RTE(1'b0), .IE(1'b1), .OEN( ~hyper_dq_oe_o[0]    ), .I( hyper_dq_o[7]      ), .C( hyper_dq_i[7] ), .PAD( pad_hyper_dq7   ), 
        											.PE(1'b1 ), .PS(1'b1 ), .ST(1'b0), .DS0(1'b0), .DS1(1'b0), .DS2(1'b0), .DS3(1'b1) );
+`else
+   IOBUF i_pad_hyper_csn0 (
+    .T(1'b1),
+    .I(),
+    .O(hyper_cs_no[0]),
+    .IO(pad_hyper_csn0)
+  );
+  IOBUF i_pad_hyper_csn1 (
+    .T(1'b1),
+    .I(),
+    .O(hyper_cs_no[1]),
+    .IO(pad_hyper_csn1)
+  );
+  assign pad_hyper_reset_n = hyper_reset_no;
+  // Not used in VCU118 mapping
+  // IOBUF i_pad_hyper_reset_n (
+  //   .T(1'b1),
+  //   .I(),
+  //   .O(hyper_reset_no),
+  //   .IO(pad_hyper_reset_n)
+  // );
+   IOBUF i_pad_hyper_ck (
+    .T(1'b1),
+    .I(),
+    .O(hyper_ck_o),
+    .IO(pad_hyper_ck)
+  );
+   IOBUF i_pad_hyper_ckn (
+    .T(1'b1),
+    .I(),
+    .O(hyper_ck_no),
+    .IO(pad_hyper_ckn)
+  );
+   IOBUF i_pad_hyper_dq0 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[0]),
+    .O(hyper_dq_o[0]),
+    .IO(pad_hyper_dq0)
+  );
+   IOBUF i_pad_hyper_dq1 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[1]),
+    .O(hyper_dq_o[1]),
+    .IO(pad_hyper_dq1_pad)
+  );
+   IOBUF i_pad_hyper_dq2 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[2]),
+    .O(hyper_dq_o[2]),
+    .IO(pad_hyper_dq2_pad)
+  );
+   IOBUF i_pad_hyper_dq3 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[3]),
+    .O(hyper_dq_o[3]),
+    .IO(pad_hyper_dq3_pad)
+  );
+   IOBUF i_pad_hyper_dq4 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[4]),
+    .O(hyper_dq_o[4]),
+    .IO(pad_hyper_dq4_pad)
+  );
+   IOBUF i_pad_hyper_dq5 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[5]),
+    .O(hyper_dq_o[5]),
+    .IO(pad_hyper_dq5_pad)
+  );
+   IOBUF i_pad_hyper_dq6 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[6]),
+    .O(hyper_dq_o[6]),
+    .IO(pad_hyper_dq6_pad)
+  );
+   IOBUF i_pad_hyper_dq7 (
+    .T(hyper_dq_oe_o[0]),
+    .I(hyper_dq_i[7]),
+    .O(hyper_dq_o[7]),
+    .IO(pad_hyper_dq7_pad)
+  );
+   IOBUF i_pad_hyper_rwds (
+    .T(hyper_rwds_oe_o[0]),
+    .I(hyper_rwds_i),
+    .O(hyper_rwds_o[0]),
+    .IO(pad_hyper_rwds_pad)
+  );
+`endif
 
     udma_hyper_top #(
     	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
