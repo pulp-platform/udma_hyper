@@ -130,49 +130,49 @@ module hyper_macro
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[1]),
     .O(hyper_dq_i[1]),
-    .IO(pad_hyper_dq1_pad)
+    .IO(pad_hyper_dq1)
   );
    IOBUF i_pad_hyper_dq2 (
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[2]),
     .O(hyper_dq_i[2]),
-    .IO(pad_hyper_dq2_pad)
+    .IO(pad_hyper_dq2)
   );
    IOBUF i_pad_hyper_dq3 (
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[3]),
     .O(hyper_dq_i[3]),
-    .IO(pad_hyper_dq3_pad)
+    .IO(pad_hyper_dq3)
   );
    IOBUF i_pad_hyper_dq4 (
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[4]),
     .O(hyper_dq_i[4]),
-    .IO(pad_hyper_dq4_pad)
+    .IO(pad_hyper_dq4)
   );
    IOBUF i_pad_hyper_dq5 (
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[5]),
     .O(hyper_dq_i[5]),
-    .IO(pad_hyper_dq5_pad)
+    .IO(pad_hyper_dq5)
   );
    IOBUF i_pad_hyper_dq6 (
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[6]),
     .O(hyper_dq_i[6]),
-    .IO(pad_hyper_dq6_pad)
+    .IO(pad_hyper_dq6)
   );
    IOBUF i_pad_hyper_dq7 (
     .T(hyper_dq_oe_o[0]),
     .I(hyper_dq_o[7]),
     .O(hyper_dq_i[7]),
-    .IO(pad_hyper_dq7_pad)
+    .IO(pad_hyper_dq7)
   );
    IOBUF i_pad_hyper_rwds (
     .T(hyper_rwds_oe_o[0]),
-    .I(hyper_rwds_i),
-    .O(hyper_rwds_o[0]),
-    .IO(pad_hyper_rwds_pad)
+    .I(hyper_rwds_o[0]),
+    .O(hyper_rwds_i),
+    .IO(pad_hyper_rwds)
   );
 `endif
 
