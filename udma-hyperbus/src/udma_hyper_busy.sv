@@ -26,7 +26,7 @@ module udma_hyper_busy(
    output   busy_o
 );
 
-   enum     {IDLE, ISSUED, BUSY, END}  control_state;
+   enum   logic[1:0]  {IDLE, ISSUED, BUSY, END}  control_state;
    logic    r_busy;
    logic    r_running_trans_phy, r2nd_running_trans_phy, r3rd_running_trans_phy;
    logic    r_proc_id_phy, r2nd_proc_id_phy, r3rd_proc_id_phy;
