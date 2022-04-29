@@ -776,7 +776,7 @@ module udma_hyperbus_mulid
     .rx_valid_o                      ( rx_valid_phy                 ),
     .rx_ready_i                      ( rx_ready_phy                 ),
     .rx_data_o                       ( rx_data_phy                  ),
-    .rx_last_o                       ( rx_last_o                    ),
+    .rx_last_o                       (                              ),
     .mem_sel_i                       ( ctrl_mem_sel                 ),
     .hyper_cs_no                     ( hyper_cs_no                  ),
     .hyper_ck_o                      ( hyper_ck_o                   ),
