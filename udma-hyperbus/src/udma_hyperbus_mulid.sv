@@ -221,6 +221,8 @@ module udma_hyperbus_mulid
    logic                          unpack_trans_ready;
    logic [1:0]                    unpack_mem_sel;
    logic [LOG_NB_CH:0]            unpack_trans_id;
+   logic                          unpack_tx_en;
+   logic                          unpack_rx_en;
 
    logic [4:0]                    unpack_t_latency_access;
    logic                          unpack_en_latency_additional;
