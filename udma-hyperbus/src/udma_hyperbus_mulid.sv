@@ -221,6 +221,8 @@ module udma_hyperbus_mulid
    logic                          unpack_trans_ready;
    logic [1:0]                    unpack_mem_sel;
    logic [LOG_NB_CH:0]            unpack_trans_id;
+   logic                          unpack_tx_en;
+   logic                          unpack_rx_en;
 
    logic [4:0]                    unpack_t_latency_access;
    logic                          unpack_en_latency_additional;
@@ -774,7 +776,7 @@ module udma_hyperbus_mulid
     .rx_valid_o                      ( rx_valid_phy                 ),
     .rx_ready_i                      ( rx_ready_phy                 ),
     .rx_data_o                       ( rx_data_phy                  ),
-    .rx_last_o                       ( rx_last_o                    ),
+    .rx_last_o                       (                              ),
     .mem_sel_i                       ( ctrl_mem_sel                 ),
     .hyper_cs_no                     ( hyper_cs_no                  ),
     .hyper_ck_o                      ( hyper_ck_o                   ),

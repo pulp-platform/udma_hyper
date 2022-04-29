@@ -112,7 +112,7 @@ module hyper_twd_trans_spliter
    logic [3:0]                        r_t_variable_latency_check;
 
 
-   enum  {STANDBY, SETUP, TRANSACTION, END} control_state;
+   enum logic[1:0] {STANDBY, SETUP, TRANSACTION, END} control_state;
 
    logic [L2_AWIDTH_NOAL -1:0]        next_rx_start_addr;
    logic [L2_AWIDTH_NOAL -1:0]        next_tx_start_addr;

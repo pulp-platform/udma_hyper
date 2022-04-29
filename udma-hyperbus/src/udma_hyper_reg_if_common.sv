@@ -68,6 +68,7 @@ module udma_hyper_reg_if_common #(
    logic [1:0]                                                 r_mem_sel;
    logic [$clog2(NB_CH)-1:0]                                   alloc_id;
 
+   logic [2:0]                                                 cfg_n_hyperdevice_o;
 
    //assign reg_space_tran = r_addr_space & (!r_rw);
    assign s_wr_addr = (cfg_valid_i & ~cfg_reg_rwn_i) ? cfg_addr_i : 5'h0;
