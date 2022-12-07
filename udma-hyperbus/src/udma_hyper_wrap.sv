@@ -47,11 +47,15 @@ import udma_pkg::L2_AWIDTH_NOAL;
 
 logic is_hyper_read_q;
 logic is_hyper_read_d;
+  logic s_cfg_ready;
 
 logic[31:0] s_cfg_data_out;
 
 assign cfg_data_o[0] = s_cfg_data_out;
 assign cfg_data_o[1] = s_cfg_data_out;
+
+assign cfg_ready_o[0] = s_cfg_ready & cfg_valid_i[0];
+assign cfg_ready_o[1] = s_cfg_ready & cfg_valid_i[1];
 
 udma_hyper_top #(
 	.L2_AWIDTH_NOAL (L2_AWIDTH_NOAL),
@@ -67,7 +71,7 @@ udma_hyper_top #(
 	.cfg_addr_i         ( {cfg_valid_i[1], cfg_addr_i}),
 	.cfg_valid_i        ( |cfg_valid_i       ),
 	.cfg_rwn_i          ( cfg_rwn_i          ),
-	.cfg_ready_o        ( {2{cfg_ready_o}}   ),
+	.cfg_ready_o        ( s_cfg_ready_o      ),
 	.cfg_data_o         ( s_cfg_data_out     ),
 
 	.cfg_rx_startaddr_o ( rx_ch[0].startaddr  ),
@@ -82,7 +86,7 @@ udma_hyper_top #(
 	.cfg_rx_bytes_left_i( rx_ch[0].bytes_left ),
 	.data_rx_datasize_o ( rx_ch[0].datasize   ),
 	.data_rx_o          ( rx_ch[0].data       ),
-	.data_rx_valid_o    ( {1'b0,rx_ch[0].valid}    ),
+	.data_rx_valid_o    ( rx_ch[0].valid      ),
 	.data_rx_ready_i    ( rx_ch[0].ready      ),
 
 	.cfg_tx_startaddr_o ( tx_ch[0].startaddr  ),
