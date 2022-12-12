@@ -24,56 +24,58 @@ module udma_hyper_top #(
      input  logic                      rstn_i,
 
      input  logic [31:0]               cfg_data_i,
-     input  logic [4:0]                cfg_addr_i,
-     input  logic [NB_CH:0]            cfg_valid_i,
+     input  logic [5:0]                cfg_addr_i,
+     input  logic                      cfg_valid_i,
      input  logic                      cfg_rwn_i,
-     output logic [NB_CH:0]            cfg_ready_o,
-     output logic [NB_CH:0][31:0]      cfg_data_o,
+     output logic                      cfg_ready_o,
+     output logic          [31:0]      cfg_data_o,
 
      output logic [L2_AWIDTH_NOAL-1:0] cfg_rx_startaddr_o,
-     output logic     [TRANS_SIZE-1:0] cfg_rx_size_o,
+     output logic [TRANS_SIZE-1:0]     cfg_rx_size_o,
+     output udma_pkg::ch_dest_t        cfg_rx_dest_o,
      output logic                      cfg_rx_continuous_o,
      output logic                      cfg_rx_en_o,
      output logic                      cfg_rx_clr_o,
-     input  logic                      cfg_rx_en_i,
-     input  logic                      cfg_rx_pending_i,
-     input  logic [L2_AWIDTH_NOAL-1:0] cfg_rx_curr_addr_i,
-     input  logic     [TRANS_SIZE-1:0] cfg_rx_bytes_left_i,
- 
+     input logic                       cfg_rx_en_i,
+     input logic                       cfg_rx_pending_i,
+     input logic [L2_AWIDTH_NOAL-1:0]  cfg_rx_curr_addr_i,
+     input logic [TRANS_SIZE-1:0]      cfg_rx_bytes_left_i,
+
      output logic [L2_AWIDTH_NOAL-1:0] cfg_tx_startaddr_o,
-     output logic     [TRANS_SIZE-1:0] cfg_tx_size_o,
+     output logic [TRANS_SIZE-1:0]     cfg_tx_size_o,
+     output udma_pkg::ch_dest_t        cfg_tx_dest_o,
      output logic                      cfg_tx_continuous_o,
      output logic                      cfg_tx_en_o,
      output logic                      cfg_tx_clr_o,
-     input  logic                      cfg_tx_en_i,
-     input  logic                      cfg_tx_pending_i,
-     input  logic [L2_AWIDTH_NOAL-1:0] cfg_tx_curr_addr_i,
-     input  logic     [TRANS_SIZE-1:0] cfg_tx_bytes_left_i,
-     output logic          [NB_CH-1:0] evt_eot_hyper_o,
+     input logic                       cfg_tx_en_i,
+     input logic                       cfg_tx_pending_i,
+     input logic [L2_AWIDTH_NOAL-1:0]  cfg_tx_curr_addr_i,
+     input logic [TRANS_SIZE-1:0]      cfg_tx_bytes_left_i,
+     output logic [NB_CH-1:0]          evt_eot_hyper_o,
 
-    output logic                       data_tx_req_o,
-    input  logic                       data_tx_gnt_i,
-    output logic                [1:0]  data_tx_datasize_o,
-    input  logic               [31:0]  data_tx_i,
-    input  logic                       data_tx_valid_i,
-    output logic                       data_tx_ready_o,
+     output logic                      data_tx_req_o,
+     input logic                       data_tx_gnt_i,
+     output logic [1:0]                data_tx_datasize_o,
+     input logic [31:0]                data_tx_i,
+     input logic                       data_tx_valid_i,
+     output logic                      data_tx_ready_o,
 
-    output logic                [1:0]  data_rx_datasize_o,
-    output logic               [31:0]  data_rx_o,
-    output logic                       data_rx_valid_o,
-    input  logic                       data_rx_ready_i,
+     output logic [1:0]                data_rx_datasize_o,
+     output logic [31:0]               data_rx_o,
+     output logic                      data_rx_valid_o,
+     input logic                       data_rx_ready_i,
 
     // physical interface
-    output logic [1:0]                 hyper_cs_no,
-    output logic                       hyper_ck_o,
-    output logic                       hyper_ck_no,
-    output logic [1:0]                 hyper_rwds_o,
-    input  logic                       hyper_rwds_i,
-    output logic [1:0]                 hyper_rwds_oe_o,
-    input  logic [15:0]                hyper_dq_i,
-    output logic [15:0]                hyper_dq_o,
-    output logic [1:0]                 hyper_dq_oe_o,
-    output logic                       hyper_reset_no
+     output logic [1:0]                hyper_cs_no,
+     output logic                      hyper_ck_o,
+     output logic                      hyper_ck_no,
+     output logic [1:0]                hyper_rwds_o,
+     input logic                       hyper_rwds_i,
+     output logic [1:0]                hyper_rwds_oe_o,
+     input logic [15:0]                hyper_dq_i,
+     output logic [15:0]               hyper_dq_o,
+     output logic [1:0]                hyper_dq_oe_o,
+     output logic                      hyper_reset_no
 
     //debug
     //output logic                       debug_hyper_rwds_oe_o,
@@ -88,26 +90,44 @@ module udma_hyper_top #(
 
      io_tx_fifo #(
       .DATA_WIDTH(32),
-      .BUFFER_DEPTH(4)
+      .BUFFER_DEPTH(16)
       ) u_fifo (
         .clk_i   ( sys_clk_i       ),
         .rstn_i  ( rstn_i          ),
         .clr_i   ( 1'b0            ),
-        .data_o  ( s_data_tx       ),
-        .valid_o ( s_data_tx_valid ),
-        .ready_i ( s_data_tx_ready ),
+
         .req_o   ( data_tx_req_o   ),
         .gnt_i   ( data_tx_gnt_i   ),
         .valid_i ( data_tx_valid_i ),
         .data_i  ( data_tx_i       ),
-        .ready_o ( data_tx_ready_o )
+        .ready_o ( data_tx_ready_o ),
+
+        .data_o  ( s_data_tx       ),
+        .valid_o ( s_data_tx_valid ),
+        .ready_i ( s_data_tx_ready )
     );
 
+    logic [NB_CH:0] cfg_valid_s;
+    logic [NB_CH:0] cfg_ready_s;
+    logic [NB_CH:0][31:0] cfg_rdata_s;
+    logic cfg_demux_s;
+
+    assign cfg_demux_s = cfg_addr_i[5];
+
+    always_comb begin : proc_demux_cfg
+        // chose the valid according to the address
+        cfg_valid_s[0] = ~cfg_addr_i[5] && cfg_valid_i;
+        cfg_valid_s[1] = cfg_addr_i[5] && cfg_valid_i;
+        // pick the right response according to the address
+        cfg_ready_o = cfg_demux_s ? cfg_ready_s[1] : cfg_ready_s[0];
+        cfg_data_o = cfg_demux_s ? cfg_rdata_s[1] : cfg_rdata_s[0];
+    end
+
     udma_hyperbus_mulid #(
-     .L2_AWIDTH_NOAL ( L2_AWIDTH_NOAL ),
-     .TRANS_SIZE     ( TRANS_SIZE     ),
-     .DELAY_BIT_WIDTH ( DELAY_BIT_WIDTH ),
-     .NB_CH          ( NB_CH          )
+        .L2_AWIDTH_NOAL ( L2_AWIDTH_NOAL ),
+        .TRANS_SIZE     ( TRANS_SIZE     ),
+        .DELAY_BIT_WIDTH ( DELAY_BIT_WIDTH ),
+        .NB_CH          ( NB_CH          )
     ) udma_hyperbus_i
     (
         .sys_clk_i               ( sys_clk_i                    ),
@@ -116,11 +136,11 @@ module udma_hyper_top #(
         .phy_rst_ni              ( rstn_i                       ),
 
         .cfg_data_i              ( cfg_data_i                   ),
-        .cfg_addr_i              ( cfg_addr_i                   ),
-        .cfg_valid_i             ( cfg_valid_i                  ),
+        .cfg_addr_i              ( cfg_addr_i[4:0]              ),
+        .cfg_valid_i             ( cfg_valid_s                  ),
         .cfg_rwn_i               ( cfg_rwn_i                    ),
-        .cfg_ready_o             ( cfg_ready_o                  ),
-        .cfg_data_o              ( cfg_data_o                   ),
+        .cfg_ready_o             ( cfg_ready_s                  ),
+        .cfg_data_o              ( cfg_rdata_s                  ),
 
         .tx_data_udma_i          ( s_data_tx                    ),
         .tx_valid_udma_i         ( s_data_tx_valid              ),
@@ -132,6 +152,7 @@ module udma_hyper_top #(
 
         .udma_rx_startaddr_o     ( cfg_rx_startaddr_o           ),
         .udma_rx_size_o          ( cfg_rx_size_o                ),
+        .cfg_rx_dest_o,
         .cfg_rx_datasize_o       ( data_rx_datasize_o           ),
         .cfg_rx_continuous_o     ( cfg_rx_continuous_o          ),
         .udma_rx_en_o            ( cfg_rx_en_o                  ),
@@ -143,6 +164,7 @@ module udma_hyper_top #(
 
         .udma_tx_startaddr_o     ( cfg_tx_startaddr_o           ),
         .udma_tx_size_o          ( cfg_tx_size_o                ),
+        .cfg_tx_dest_o,
         .cfg_tx_datasize_o       ( data_tx_datasize_o           ),
         .cfg_tx_continuous_o     ( cfg_tx_continuous_o          ),
         .udma_tx_en_o            ( cfg_tx_en_o                  ),

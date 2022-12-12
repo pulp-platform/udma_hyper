@@ -93,8 +93,8 @@ module udma_cmd_queue #(
       .cfg_rx_datasize_o              (),
       .cfg_rx_continuous_o            (),
       .cfg_rx_clr_o                   (),
-      .cfg_rx_en_i                    (),
-      .cfg_rx_pending_i               (),
+      .cfg_rx_en_i                    (1'b0),
+      .cfg_rx_pending_i               (1'b0),
 
       .cfg_tx_startaddr_o             ( cfg_tx_start_addr            ),
       .cfg_tx_size_o                  ( cfg_tx_size                  ),
@@ -102,8 +102,8 @@ module udma_cmd_queue #(
       .cfg_tx_continuous_o            (),
       .cfg_tx_datasize_o              (),
       .cfg_tx_clr_o                   (),
-      .cfg_tx_en_i                    (),
-      .cfg_tx_pending_i               (),
+      .cfg_tx_en_i                    (1'b0),
+      .cfg_tx_pending_i               (1'b0),
      
       .cfg_hyper_addr_o               ( cfg_hyper_addr               ),
       .cfg_hyper_intreg_o             ( cfg_hyper_intreg             ),
