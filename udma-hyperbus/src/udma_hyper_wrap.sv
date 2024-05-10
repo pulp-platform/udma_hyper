@@ -38,8 +38,6 @@ logic [15:0] hyper_dq_o;
 logic [1:0]  hyper_dq_oe;
 logic        hyper_reset_no;
 
-logic [1:0][31:0] cfg_data_s;
-logic [1:0]       cfg_ready_s;
 logic             evt_eot_hyper_s;
 
 import udma_pkg::TRANS_SIZE;     
@@ -79,7 +77,7 @@ udma_hyper_top #(
 	.cfg_rx_bytes_left_i( rx_ch[0].bytes_left ),
 	.data_rx_datasize_o ( rx_ch[0].datasize   ),
 	.data_rx_o          ( rx_ch[0].data       ),
-	.data_rx_valid_o    ( rx_ch[0].valid      ),
+	.data_rx_valid_o    ( {1'b0,rx_ch[0].valid}    ),
 	.data_rx_ready_i    ( rx_ch[0].ready      ),
 
 	.cfg_tx_startaddr_o ( tx_ch[0].startaddr  ),
@@ -149,11 +147,6 @@ assign events_o[0] = rx_ch[0].events;
 assign events_o[1] = tx_ch[0].events;
 assign events_o[2] = |evt_eot_hyper_s & is_hyper_read_d ;
 assign events_o[3] = |evt_eot_hyper_s & !is_hyper_read_d;
-
-//assign s_events[4*PER_ID_HYPER]            = rx_ch[0].events;
-//assign s_events[4*PER_ID_HYPER+1]          = tx_ch[0].events;
-//assign s_events[4*PER_ID_HYPER+2]          = |evt_eot_hyper_s & is_hyper_read_d ;
-//assign s_events[4*PER_ID_HYPER+3]          = |evt_eot_hyper_s & !is_hyper_read_d;
 
 always @(posedge sys_clk_i, negedge rstn_i) begin
    if(~rstn_i) 
