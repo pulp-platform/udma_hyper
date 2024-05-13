@@ -78,7 +78,7 @@ module udma_hyper_ctrl
     output  logic [3:0]             ctrl_t_variable_latency_check_o
 );
 
-    enum         {IDLE, SETUP, REG_W, WRITETRANSACTION, READTRANSACTION, END}  control_state;
+    enum logic [2:0]       {IDLE, SETUP, REG_W, WRITETRANSACTION, READTRANSACTION, END}  control_state;
     logic        [31:0]             cnt_rw_recovery;
     logic        [31:0]             cnt_reg_w;
     localparam   T_REG_W = 4;

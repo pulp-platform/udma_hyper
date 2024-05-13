@@ -12,24 +12,6 @@
 //// Hayate Okuhara <hayate.okuhara@unibo.it>
 
 
-// Configuration register for Hyper bus CHANNEl
-`define REG_RX_SADDR            5'b00000 //BASEADDR+0x00 L2 address for RX
-`define REG_RX_SIZE             5'b00001 //BASEADDR+0x04 size of the software buffer in L2
-`define REG_UDMA_RXCFG          5'b00010 //BASEADDR+0x08 UDMA configuration setup (RX)
-`define REG_TX_SADDR            5'b00011 //BASEADDR+0x0C address of the data being transferred 
-`define REG_TX_SIZE             5'b00100 //BASEADDR+0x10 size of the data being transferred
-`define REG_UDMA_TXCFG          5'b00101 //BASEADDR+0x14 UDMA configuration setup (TX)
-`define HYPER_CA_SETUP          5'b00110 //BASEADDR+0x18 set read/write, address space, and burst type 
-`define REG_HYPER_ADDR          5'b00111 //BASEADDR+0x1C set address in a hyper ram.
-`define REG_HYPER_CFG           5'b01000 //BASEADDR+0x20 set the configuration data for HyperRAM
-`define STATUS                  5'b01001 //BASEADDR+0x24 status register
-`define TWD_ACT_EXT             5'b01010 //BASEADDR+0x28 set 2D transfer activation
-`define TWD_COUNT_EXT           5'b01011 //BASEADDR+0x2C set 2D transfer count
-`define TWD_STRIDE_EXT          5'b01100 //BASEADDR+0x30 set 2D transfer stride
-`define TWD_ACT_L2              5'b01101 //BASEADDR+0x28 set 2D transfer activation
-`define TWD_COUNT_L2            5'b01110 //BASEADDR+0x2C set 2D transfer count
-`define TWD_STRIDE_L2           5'b01111 //BASEADDR+0x30 set 2D transfer stride
-
 
 module udma_hyper_reg_if_mulid #(
                           parameter L2_AWIDTH_NOAL = 12,
@@ -84,6 +66,24 @@ module udma_hyper_reg_if_mulid #(
                              input  logic                      busy_i,
                              output logic                      trans_valid_o
                              );
+
+  // Configuration register for Hyper bus CHANNEl
+   localparam logic[4:0] REG_RX_SADDR          =  5'b00000; //BASEADDR+0x00 L2 address for RX
+   localparam logic[4:0] REG_RX_SIZE           =  5'b00001; //BASEADDR+0x04 size of the software buffer in L2
+   localparam logic[4:0] REG_UDMA_RXCFG        =  5'b00010; //BASEADDR+0x08 UDMA configuration setup (RX)
+   localparam logic[4:0] REG_TX_SADDR          =  5'b00011; //BASEADDR+0x0C address of the data being transferred 
+   localparam logic[4:0] REG_TX_SIZE           =  5'b00100; //BASEADDR+0x10 size of the data being transferred
+   localparam logic[4:0] REG_UDMA_TXCFG        =  5'b00101; //BASEADDR+0x14 UDMA configuration setup (TX)
+   localparam logic[4:0] HYPER_CA_SETUP        =  5'b00110; //BASEADDR+0x18 set read/write, address space, and burst type 
+   localparam logic[4:0] REG_HYPER_ADDR        =  5'b00111; //BASEADDR+0x1C set address in a hyper ram.
+   localparam logic[4:0] REG_HYPER_CFG         =  5'b01000; //BASEADDR+0x20 set the configuration data for HyperRAM
+   localparam logic[4:0] STATUS                =  5'b01001; //BASEADDR+0x24 status register
+   localparam logic[4:0] TWD_ACT_EXT           =  5'b01010; //BASEADDR+0x28 set 2D transfer activation
+   localparam logic[4:0] TWD_COUNT_EXT         =  5'b01011; //BASEADDR+0x2C set 2D transfer count
+   localparam logic[4:0] TWD_STRIDE_EXT        =  5'b01100; //BASEADDR+0x30 set 2D transfer stride
+   localparam logic[4:0] TWD_ACT_L2            =  5'b01101; //BASEADDR+0x28 set 2D transfer activation
+   localparam logic[4:0] TWD_COUNT_L2          =  5'b01110; //BASEADDR+0x2C set 2D transfer count
+   localparam logic[4:0] TWD_STRIDE_L2         =  5'b01111; //BASEADDR+0x30 set 2D transfer stride
 
    logic [L2_AWIDTH_NOAL-1:0]                                  r_rx_startaddr;
    logic [TRANS_SIZE-1 : 0]                                    r_rx_size;
@@ -187,61 +187,61 @@ module udma_hyper_reg_if_mulid #(
              if (cfg_valid_i & ~cfg_reg_rwn_i)
                begin
                   case (s_wr_addr)
-                    `REG_RX_SADDR:
+                    REG_RX_SADDR:
                       r_rx_startaddr   <= cfg_data_i[L2_AWIDTH_NOAL-1:0];
-                    `REG_RX_SIZE:
+                    REG_RX_SIZE:
                       r_rx_size        <= cfg_data_i[TRANS_SIZE-1:0];
-                    `REG_UDMA_RXCFG:
+                    REG_UDMA_RXCFG:
                       begin
                          r_rx_clr          = cfg_data_i[5];
                          r_rx_en           = cfg_data_i[4];
                          r_rx_continuous  <= cfg_data_i[0];
                       end
-                    `REG_TX_SADDR:
+                    REG_TX_SADDR:
                       r_tx_startaddr   <= cfg_data_i[L2_AWIDTH_NOAL-1:0];
-                    `REG_TX_SIZE:
+                    REG_TX_SIZE:
                       r_tx_size        <= cfg_data_i[TRANS_SIZE-1:0];
-                    `REG_UDMA_TXCFG:
+                    REG_UDMA_TXCFG:
                       begin
                          r_tx_clr          = cfg_data_i[5];
                          r_tx_en           = cfg_data_i[4];
                          r_tx_continuous  <= cfg_data_i[0];
                       end      
-                    `HYPER_CA_SETUP:
+                    HYPER_CA_SETUP:
                       begin
                          r_rw            <= cfg_data_i[2];
                          r_addr_space    <= cfg_data_i[1];
                          r_burst_type    <= cfg_data_i[0];
                       end
-                    `REG_HYPER_ADDR:
+                    REG_HYPER_ADDR:
                       begin
                          r_hyper_addr <= cfg_data_i;
                       end
-                    `REG_HYPER_CFG:
+                    REG_HYPER_CFG:
                       begin
                          r_hyper_intreg <= cfg_data_i[15:0];
                       end
-                    `TWD_ACT_EXT:
+                    TWD_ACT_EXT:
                       begin
                          r_twd_trans_ext_act <= cfg_data_i[0];
                       end
-                    `TWD_COUNT_EXT:
+                    TWD_COUNT_EXT:
                       begin
                          r_twd_trans_ext_count <= cfg_data_i[TRANS_SIZE-1:0];
                       end
-                    `TWD_STRIDE_EXT:
+                    TWD_STRIDE_EXT:
                       begin
                          r_twd_trans_ext_stride <= cfg_data_i[TRANS_SIZE-1:0];
                       end
-                    `TWD_ACT_L2:
+                    TWD_ACT_L2:
                       begin
                          r_twd_trans_l2_act <= cfg_data_i[0];
                       end
-                    `TWD_COUNT_L2:
+                    TWD_COUNT_L2:
                       begin
                          r_twd_trans_l2_count <= cfg_data_i[TRANS_SIZE-1:0];
                       end
-                    `TWD_STRIDE_L2:
+                    TWD_STRIDE_L2:
                       begin
                          r_twd_trans_l2_stride <= cfg_data_i[TRANS_SIZE-1:0];
                       end
@@ -255,37 +255,37 @@ module udma_hyper_reg_if_mulid #(
      begin
         cfg_data_o = 32'h0;
         case (s_rd_addr)
-          `REG_RX_SADDR:
+          REG_RX_SADDR:
             cfg_data_o = r_rx_startaddr;
-          `REG_RX_SIZE:
+          REG_RX_SIZE:
             cfg_data_o = r_rx_size;
-          `REG_UDMA_RXCFG:
+          REG_UDMA_RXCFG:
             cfg_data_o = {26'h0,cfg_rx_pending_i,cfg_rx_en_i,1'b0,2'b10,r_rx_continuous};
-          `REG_TX_SADDR:
+          REG_TX_SADDR:
             cfg_data_o = r_tx_startaddr;
-          `REG_TX_SIZE:
+          REG_TX_SIZE:
             cfg_data_o = r_tx_size;
-          `REG_UDMA_TXCFG:
+          REG_UDMA_TXCFG:
             cfg_data_o = {26'h0,cfg_tx_pending_i,cfg_tx_en_i,1'b0,2'b00,r_tx_continuous};
-          `HYPER_CA_SETUP:            
+          HYPER_CA_SETUP:            
             cfg_data_o = {29'h0, cfg_rw_hyper_o, cfg_addr_space_o, cfg_burst_type_o};
-          `REG_HYPER_ADDR:
+          REG_HYPER_ADDR:
             cfg_data_o = cfg_hyper_addr_o;
-          `REG_HYPER_CFG:
+          REG_HYPER_CFG:
             cfg_data_o = {16'b0, r_hyper_intreg};
-          `STATUS:
+          STATUS:
             cfg_data_o = {nb_trans_waiting_i, busy_i};
-          `TWD_ACT_EXT:
+          TWD_ACT_EXT:
             cfg_data_o = {{31{1'b0}}, cfg_twd_trans_ext_act_o};
-          `TWD_COUNT_EXT:
+          TWD_COUNT_EXT:
             cfg_data_o = cfg_twd_trans_ext_count_o;
-          `TWD_STRIDE_EXT:
+          TWD_STRIDE_EXT:
             cfg_data_o = cfg_twd_trans_ext_stride_o;
-          `TWD_ACT_L2:
+          TWD_ACT_L2:
             cfg_data_o = {{31{1'b0}}, cfg_twd_trans_l2_act_o};
-          `TWD_COUNT_L2:
+          TWD_COUNT_L2:
             cfg_data_o = cfg_twd_trans_l2_count_o;
-          `TWD_STRIDE_L2:
+          TWD_STRIDE_L2:
             cfg_data_o = cfg_twd_trans_l2_stride_o;
 
           default:

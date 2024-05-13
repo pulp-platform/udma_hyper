@@ -23,16 +23,28 @@ module udma_hyper_busy(
    input    running_trans_phy_i,
 
    output   evt_eot_o,
-   output   busy_o
+   output logic   busy_o
 );
 
-   enum     {IDLE, ISSUED, BUSY, END}  control_state;
+   enum   logic[1:0]  {IDLE, ISSUED, BUSY, END}  control_state;
    logic    r_busy;
    logic    r_running_trans_phy, r2nd_running_trans_phy, r3rd_running_trans_phy;
    logic    r_proc_id_phy, r2nd_proc_id_phy, r3rd_proc_id_phy;
    logic    running_trans_phy_id;
-   assign   busy_o =  (rst_ni)? r_busy | running_trans_sys_i : 0;
+   //assign   busy_o =  (rst_ni)? r_busy | running_trans_sys_i : 0; SYSTEM RESET DRIVES COMBINATIONAL LOGIC!!
    logic    busy_d;
+
+   always_ff @(posedge sys_clk_i, negedge rst_ni) // Fix to reset bug
+    begin
+      if(!rst_ni)
+        begin
+          busy_o <= 1'b0;
+        end
+      else
+        begin
+          busy_o <= (r_busy | running_trans_sys_i);
+        end
+    end
 
 
    always_ff @(posedge phy_clk_i, negedge rst_ni)

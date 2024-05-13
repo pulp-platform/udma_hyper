@@ -1,0 +1,6 @@
+set_case_analysis 1 i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i/delay[4]
+set_case_analysis 1 i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i/delay[3]
+set_case_analysis 1 i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i/delay[2]
+set_case_analysis 1 i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i/delay[1]
+set_case_analysis 1 i_udma_hyper_top/udma_hyperbus_i/phy_i/i_read_clk_rwds/hyperbus_delay_line_i/delay[0]
+
